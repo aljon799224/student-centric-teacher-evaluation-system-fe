@@ -1,11 +1,33 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Root from "./pages/Root";
+import RegistrationPage from "./pages/RegistrationPage";
+import LoginPage from "./pages/LoginPage";
+import AdminPage from "./pages/AdminPage";
+import ProtectedRoute from "./authentication/ProtectedRoute";
+
+const router = createBrowserRouter([
+  {
+    path: "/register",
+    element: <RegistrationPage />,
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/",
+    element: <Root />,
+    children: [
+      {
+        path: "admin",
+        element: <ProtectedRoute element={<AdminPage />} />,
+      },
+    ],
+  },
+]);
+
 function App() {
-  return (
-    <>
-      <div>
-        <h1>Aljon</h1>
-      </div>
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
