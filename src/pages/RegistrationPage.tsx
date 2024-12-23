@@ -24,7 +24,7 @@ export default function RegistrationPage() {
     confirmPassword: "",
   });
 
-  const [error, setError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isToastVisible, setIsToastVisible] = useState(false);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function RegistrationPage() {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Password do not match.");
+      setErrorMessage("Password do not match.");
       setIsToastVisible(true);
       return;
     }
@@ -70,14 +70,11 @@ export default function RegistrationPage() {
         backendPayload
       );
       console.log(response);
-      navigate("/login");
+      navigate("/login", { state: { message: "Registration Successful!" } });
     } catch (error) {
       console.error(error);
     }
   };
-
-  console.log(formData);
-  console.log(error);
 
   return (
     <div className="flex flex-col justify-center font-[sans-serif] sm:h-screen p-4">
@@ -101,7 +98,7 @@ export default function RegistrationPage() {
             </svg>
             <span className="sr-only">Error icon</span>
           </div>
-          <div className="ms-3 text-sm font-normal">{error}</div>
+          <div className="ms-3 text-sm font-normal">{errorMessage}</div>
           <button
             type="button"
             className="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 text-gray-500"

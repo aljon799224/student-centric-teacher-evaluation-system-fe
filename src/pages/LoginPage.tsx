@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import aclcLogo from "../assets/aclc.svg";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface LoginFormState {
   username: string;
@@ -13,20 +13,31 @@ export default function LoginPage() {
     username: "",
     password: "",
   });
-  const [error, setError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [isToastVisible, setIsToastVisible] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsToastVisible(false);
-    }, 10000); // 3 seconds
-
-    return () => clearTimeout(timer); // Cleanup on unmount
-  }, []);
-  const closeToast = () => setIsToastVisible(false);
-
   const navigate = useNavigate();
+  const location = useLocation();
+
+  //   useEffect(() => {
+  //     const timer = setTimeout(() => {
+  //       setIsToastVisible(false);
+  //     }, 10000); // 3 seconds
+
+  //     return () => clearTimeout(timer); // Cleanup on unmount
+  //   }, []);
+
+  useEffect(() => {
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message);
+      setIsToastVisible(true);
+      navigate(location.pathname, { replace: true, state: { message: null } });
+    }
+  }, [location.state, navigate]);
+
+  const closeToast = () => setIsToastVisible(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -49,11 +60,12 @@ export default function LoginPage() {
         }
       );
       const token = response.data.access_token;
-      console.log(token);
       localStorage.setItem("token", token);
-      navigate("/admin");
+
+      navigate("/admin", { state: { message: "Login Successful!" } });
     } catch (error) {
-      setError("Invalid username or password.");
+      setSuccessMessage("");
+      setErrorMessage("Invalid username or password.");
       setIsToastVisible(true);
     }
   };
@@ -62,7 +74,7 @@ export default function LoginPage() {
     <div className="flex flex-col justify-center font-[sans-serif] sm:h-screen p-4">
       {/* toast */}
 
-      {isToastVisible && (
+      {isToastVisible && errorMessage && (
         <div
           id="toast-danger"
           className="flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow mx-auto"
@@ -80,7 +92,53 @@ export default function LoginPage() {
             </svg>
             <span className="sr-only">Error icon</span>
           </div>
-          <div className="ms-3 text-sm font-normal">{error}</div>
+          <div className="ms-3 text-sm font-normal">{errorMessage}</div>
+          <button
+            type="button"
+            className="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 text-gray-500"
+            data-dismiss-target="#toast-danger"
+            aria-label="Close"
+            onClick={closeToast}
+          >
+            <span className="sr-only">Close</span>
+            <svg
+              className="w-3 h-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 14"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {isToastVisible && successMessage && (
+        <div
+          id="toast-danger"
+          className="flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow mx-auto"
+          role="alert"
+        >
+          <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+            <svg
+              className="w-5 h-5"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+            </svg>
+            <span className="sr-only">Check icon</span>
+          </div>
+          <div className="ms-3 text-sm font-normal">{successMessage}</div>
           <button
             type="button"
             className="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 text-gray-500"
