@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import aclcLogo from "../assets/aclc.svg";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAutoHideToast } from "../hooks/useAutoHideToast";
 
 interface LoginFormState {
   username: string;
@@ -21,13 +22,8 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  //   useEffect(() => {
-  //     const timer = setTimeout(() => {
-  //       setIsToastVisible(false);
-  //     }, 10000); // 3 seconds
-
-  //     return () => clearTimeout(timer); // Cleanup on unmount
-  //   }, []);
+  // Automatically hide toast after 3 seconds
+  useAutoHideToast(isToastVisible, setIsToastVisible);
 
   useEffect(() => {
     if (location.state?.message) {

@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import aclcLogo from "../assets/aclc.svg";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAutoHideToast } from "../hooks/useAutoHideToast";
 
 interface SignUpFormState {
   username: string;
@@ -26,17 +27,12 @@ export default function RegistrationPage() {
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isToastVisible, setIsToastVisible] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsToastVisible(false);
-    }, 10000); // 3 seconds
-
-    return () => clearTimeout(timer); // Cleanup on unmount
-  }, []);
-  const closeToast = () => setIsToastVisible(false);
-
   const navigate = useNavigate();
+
+  // Automatically hide toast after 3 seconds
+  useAutoHideToast(isToastVisible, setIsToastVisible);
+
+  const closeToast = () => setIsToastVisible(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -69,7 +65,7 @@ export default function RegistrationPage() {
         "http://0.0.0.0:8000/api/v1/user",
         backendPayload
       );
-      console.log(response);
+
       navigate("/login", { state: { message: "Registration Successful!" } });
     } catch (error) {
       console.error(error);

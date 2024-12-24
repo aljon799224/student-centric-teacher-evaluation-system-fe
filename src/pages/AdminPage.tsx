@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useEffect, useState } from "react";
+import { useAutoHideToast } from "../hooks/useAutoHideToast";
 
 export default function AdminPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -8,6 +9,9 @@ export default function AdminPage() {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Automatically hide toast after 3 seconds
+  useAutoHideToast(isToastVisible, setIsToastVisible);
 
   const closeToast = () => setIsToastVisible(false);
 
