@@ -1,6 +1,17 @@
+import { useNavigate } from "react-router-dom";
 import aclcLogo from "../assets/aclc.svg";
 
 export default function Header() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Clear the token from localStorage
+    localStorage.removeItem("token");
+
+    // Redirect to the login page
+    navigate("/login");
+  };
+
   return (
     <div>
       <header className="flex shadow-md py-1 px-4 sm:px-7 bg-white min-h-[70px] tracking-wide z-[110] fixed top-0 w-full">
@@ -80,7 +91,7 @@ export default function Header() {
                       <a
                         href="javascript:void(0)"
                         className="text-sm text-gray-800 cursor-pointer flex items-center p-2 rounded-md hover:bg-gray-100 dropdown-item transition duration-300 ease-in-out"
-                        // onClick={handleLogout}
+                        onClick={handleLogout}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
