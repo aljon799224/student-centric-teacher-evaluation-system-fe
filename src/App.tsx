@@ -1,4 +1,8 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import Root from "./pages/Root";
 import RegistrationPage from "./pages/RegistrationPage";
 import LoginPage from "./pages/LoginPage";
@@ -21,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: "admin",
         element: <ProtectedRoute element={<AdminPage />} />,
+      },
+      {
+        index: true, // Default child route for the root "/"
+        element: <Navigate to="/login" replace />, // Redirect to "/login"
       },
     ],
   },
