@@ -1,3 +1,8 @@
 export default function TeacherPage() {
-  return <div>Teacher Page</div>;
+  console.log("teacher");
+  return (
+    <div>
+      <h1>Aljon Mendiola</h1>
+    </div>
+  );
 }
