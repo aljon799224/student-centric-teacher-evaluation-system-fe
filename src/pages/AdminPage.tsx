@@ -25,6 +25,8 @@ export default function AdminPage() {
 	const handleLogout = () => {
 		// Clear the token from localStorage
 		localStorage.removeItem("token");
+		localStorage.removeItem("name");
+		localStorage.removeItem("user_id");
 
 		// Redirect to the login page
 		navigate("/login");

@@ -1,8 +1,9 @@
 export default function DashboardPage() {
-	console.log("welcome");
+	const name = localStorage.getItem("name");
+
 	return (
 		<div>
-			<h1>Welcome!</h1>
+			<h1>Welcome {name}</h1>
 		</div>
 	);
 }
