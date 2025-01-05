@@ -13,6 +13,8 @@ import StudentPage from "./pages/StudentPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import AdminTeacherListView from "./pages/teacher/AdminTeacherListView";
+import AdminStudentListView from "./pages/student/AdminStudentListView";
+import AdminEvaluationListView from "./pages/evaluation/AdminEvaluationListView";
 
 const router = createBrowserRouter([
 	{
@@ -37,11 +39,19 @@ const router = createBrowserRouter([
 				children: [
 					{
 						index: true,
-						element: <DashboardPage />, // Inherits AdminPage layout
+						element: <DashboardPage />,
 					},
 					{
 						path: "teachers",
-						element: <AdminTeacherListView />, // Inherits AdminPage layout
+						element: <AdminTeacherListView />,
+					},
+					{
+						path: "students",
+						element: <AdminStudentListView />,
+					},
+					{
+						path: "evaluations",
+						element: <AdminEvaluationListView />,
 					},
 				],
 			},

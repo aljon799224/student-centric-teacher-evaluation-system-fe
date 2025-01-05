@@ -3,7 +3,7 @@ import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-interface UpdateTeacherFormState {
+interface UpdateStudentFormState {
 	username: string;
 	email: string;
 	firstName: string;
@@ -11,16 +11,16 @@ interface UpdateTeacherFormState {
 	lastName: string;
 }
 
-export default function AdminTeacherUpdateView({
+export default function AdminStudentUpdateView({
 	toggleModalUpdate,
 	updateUser,
-	teacherId,
+	studentId,
 }: any) {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
 	const navigate = useNavigate();
 
-	const [formData, setFormData] = useState<UpdateTeacherFormState>({
+	const [formData, setFormData] = useState<UpdateStudentFormState>({
 		username: "",
 		email: "",
 		firstName: "",
@@ -47,7 +47,7 @@ export default function AdminTeacherUpdateView({
 				}
 
 				const response = await axios.get(
-					`http://0.0.0.0:8000/api/v1/user/${teacherId}`,
+					`http://0.0.0.0:8000/api/v1/user/${studentId}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
@@ -72,7 +72,7 @@ export default function AdminTeacherUpdateView({
 		};
 
 		fetchUserDetails();
-	}, [teacherId]);
+	}, [studentId]);
 
 	if (isLoading)
 		return (
@@ -119,7 +119,7 @@ export default function AdminTeacherUpdateView({
 			};
 
 			const response = await axios.put(
-				`http://0.0.0.0:8000/api/v1/user/${teacherId}`,
+				`http://0.0.0.0:8000/api/v1/user/${studentId}`,
 				backendPayload,
 				{
 					headers: {
@@ -131,8 +131,8 @@ export default function AdminTeacherUpdateView({
 			updateUser(response.data);
 
 			toggleModalUpdate();
-			navigate("/admin/teachers", {
-				state: { message: "Teacher has been updated successfully!" },
+			navigate("/admin/students", {
+				state: { message: "Student has been updated successfully!" },
 			});
 		} catch (error: any) {
 			const errorMsg =
@@ -204,7 +204,7 @@ export default function AdminTeacherUpdateView({
 				<div className="relative p-4 bg-white rounded-lg shadow sm:p-5 border-2">
 					<div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5">
 						<h3 className="text-lg font-semibold text-gray-900">
-							Update Teacher
+							Update Student
 						</h3>
 						<button
 							type="button"
