@@ -3,9 +3,9 @@ import { useState } from "react";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import { useNavigate } from "react-router-dom";
 
-export default function AdminTeacherDeleteView({
+export default function AdminStudentDeleteView({
 	toggleModalDelete,
-	teacherId,
+	studentId,
 	deleteUser,
 }: any) {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export default function AdminTeacherDeleteView({
 
 			// Send a DELETE request to the API using axios
 			const response = await axios.delete(
-				`http://0.0.0.0:8000/api/v1/user/${teacherId}`,
+				`http://0.0.0.0:8000/api/v1/user/${studentId}`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -45,13 +45,13 @@ export default function AdminTeacherDeleteView({
 
 				toggleModalDelete();
 				setIsToastVisible(true);
-				navigate("/admin/teachers", {
-					state: { message: "Teacher deleted successfully" },
+				navigate("/admin/students", {
+					state: { message: "Student deleted successfully" },
 				});
 			} else {
-				setErrorMessage("Failed to delete teacher");
+				setErrorMessage("Failed to delete student");
 				setIsToastVisible(true);
-				throw new Error("Failed to delete teacher");
+				throw new Error("Failed to delete student");
 			}
 		} catch (error: any) {
 			setIsToastVisible(true);

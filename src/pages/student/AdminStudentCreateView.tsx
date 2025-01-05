@@ -1,94 +1,51 @@
-import { useEffect, useState } from "react";
-import { useAutoHideToast } from "../../hooks/useAutoHideToast";
-import axios from "axios";
+import { useState } from "react";
+import generatePassword from "../../utils/generatePassword";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 
-interface UpdateTeacherFormState {
+interface CreateStudentFormState {
 	username: string;
 	email: string;
 	firstName: string;
 	middleName: string;
 	lastName: string;
+	password: string;
+	role: string;
+	tempPwd: boolean;
 }
 
-export default function AdminTeacherUpdateView({
-	toggleModalUpdate,
-	updateUser,
-	teacherId,
+export default function AdminStudentCreateView({
+	toggleModalCreate,
+	addUser,
 }: any) {
+	const [password, setPassword] = useState("");
+	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
 	const navigate = useNavigate();
-
-	const [formData, setFormData] = useState<UpdateTeacherFormState>({
-		username: "",
-		email: "",
-		firstName: "",
-		middleName: "",
-		lastName: "",
-	});
-
-	const [isLoading, setIsLoading] = useState(true);
-
-	const token = localStorage.getItem("token");
 
 	// Automatically hide toast after 3 seconds
 	useAutoHideToast(isToastVisible, setIsToastVisible);
 
 	const closeToast = () => setIsToastVisible(false);
 
-	useEffect(() => {
-		const fetchUserDetails = async () => {
-			try {
-				if (!token) {
-					setErrorMessage("Not authenticated");
-					setIsToastVisible(true);
-					throw new Error("Not authenticated");
-				}
+	const [formData, setFormData] = useState<CreateStudentFormState>({
+		username: "",
+		email: "",
+		firstName: "",
+		middleName: "",
+		lastName: "",
+		password: "",
+		role: "student",
+		tempPwd: true,
+	});
 
-				const response = await axios.get(
-					`http://0.0.0.0:8000/api/v1/user/${teacherId}`,
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				);
-
-				const { username, email, first_name, middle_name, last_name } =
-					response.data;
-				setFormData({
-					username,
-					email,
-					firstName: first_name,
-					middleName: middle_name,
-					lastName: last_name,
-				});
-			} catch (error: any) {
-				console.log(error.message);
-				setErrorMessage(error.message);
-				setIsToastVisible(true);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchUserDetails();
-	}, [teacherId]);
-
-	if (isLoading)
-		return (
-			<div>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					className="w-10 animate-[spin_0.8s_linear_infinite] fill-blue-600 block mx-auto"
-					viewBox="0 0 24 24"
-				>
-					<path
-						d="M12 22c5.421 0 10-4.579 10-10h-2c0 4.337-3.663 8-8 8s-8-3.663-8-8c0-4.336 3.663-8 8-8V2C6.579 2 2 6.58 2 12c0 5.421 4.579 10 10 10z"
-						data-original="#000000"
-					/>
-				</svg>
-			</div>
-		);
+	// Function to toggle password visibility
+	const togglePasswordVisibility = () => {
+		setIsPasswordVisible((prev) => !prev);
+	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -101,14 +58,6 @@ export default function AdminTeacherUpdateView({
 	const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		// Check for authentication token (e.g., in localStorage or cookies)
-
-		if (!token) {
-			setErrorMessage("Not authenticated");
-			setIsToastVisible(true);
-			throw new Error("Not authenticated");
-		}
-
 		try {
 			const backendPayload = {
 				username: formData.username,
@@ -116,35 +65,27 @@ export default function AdminTeacherUpdateView({
 				first_name: formData.firstName,
 				middle_name: formData.middleName,
 				last_name: formData.lastName,
+				password: formData.password,
+				role: formData.role,
+				temp_pwd: formData.tempPwd,
+				admin_id: localStorage.getItem("user_id"),
 			};
 
-			const response = await axios.put(
-				`http://0.0.0.0:8000/api/v1/user/${teacherId}`,
-				backendPayload,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
+			const response = await axios.post(
+				"http://0.0.0.0:8000/api/v1/user",
+				backendPayload
 			);
 
-			updateUser(response.data);
+			addUser(response.data);
 
-			toggleModalUpdate();
-			navigate("/admin/teachers", {
-				state: { message: "Teacher has been updated successfully!" },
+			toggleModalCreate();
+			navigate("/admin/students", {
+				state: { message: "Student has been created successfully!" },
 			});
 		} catch (error: any) {
-			const errorMsg =
-				error.response?.data?.message ||
-				error.message ||
-				"An error occurred. Please try again.";
-
-			// Display error feedback
-			setErrorMessage(errorMsg);
+			setErrorMessage(error.message);
 			setIsToastVisible(true);
-
-			console.error("Error updating user:", error);
+			console.error(error);
 		}
 	};
 
@@ -203,14 +144,12 @@ export default function AdminTeacherUpdateView({
 				)}
 				<div className="relative p-4 bg-white rounded-lg shadow sm:p-5 border-2">
 					<div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5">
-						<h3 className="text-lg font-semibold text-gray-900">
-							Update Teacher
-						</h3>
+						<h3 className="text-lg font-semibold text-gray-900">Add Student</h3>
 						<button
 							type="button"
 							className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
 							data-modal-toggle="defaultModal"
-							onClick={toggleModalUpdate}
+							onClick={toggleModalCreate}
 						>
 							<svg
 								aria-hidden="true"
@@ -245,6 +184,7 @@ export default function AdminTeacherUpdateView({
 									placeholder="Enter username"
 									onChange={handleChange}
 									value={formData.username}
+									required
 									maxLength={20}
 								/>
 							</div>
@@ -259,6 +199,7 @@ export default function AdminTeacherUpdateView({
 									placeholder="Enter email"
 									onChange={handleChange}
 									value={formData.email}
+									required
 									maxLength={40}
 								/>
 							</div>
@@ -301,13 +242,56 @@ export default function AdminTeacherUpdateView({
 									value={formData.lastName}
 								/>
 							</div>
+							<div>
+								<label className="block mb-2 text-sm font-medium text-gray-900">
+									Role
+								</label>
+								<input
+									type="text"
+									name="role"
+									className="bg-gray-200 border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 disabled:bg-gray-200 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+									placeholder="Role"
+									value="student"
+									disabled
+									onChange={handleChange}
+								/>
+							</div>
+							<div className="relative">
+								<label className="block mb-2 text-sm font-medium text-gray-900">
+									Password
+								</label>
+								<input
+									type={isPasswordVisible ? "text" : "password"} // Toggle between text and password type
+									name="password"
+									className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pr-10 p-2.5" // Add padding-right for the eye icon
+									placeholder="Password"
+									value={password}
+									onChange={handleChange}
+									readOnly
+								/>
+
+								<button
+									type="button"
+									onClick={() => generatePassword(setPassword, setFormData)} // Use the utility function
+									className="bg-blue-500 text-white p-2 rounded-xl mt-2 me-2"
+								>
+									Generate
+								</button>
+								<button
+									type="button"
+									onClick={togglePasswordVisibility} // Toggle password visibility
+									className=" bg-gray-300 text-black p-2 rounded-xl"
+								>
+									{isPasswordVisible ? "Hide" : "Show"}
+								</button>
+							</div>
 						</div>
 
 						<button
 							type="submit"
 							className="w-full py-3 px-4 text-sm tracking-wider font-semibold rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none"
 						>
-							Update
+							Create
 						</button>
 					</form>
 				</div>
