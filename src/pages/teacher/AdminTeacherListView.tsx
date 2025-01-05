@@ -97,7 +97,11 @@ export default function AdminTeacherListView() {
 	};
 
 	const filteredTeachers = users
-		.filter((user) => user.role === "teacher")
+		.filter(
+			(user) =>
+				user.role === "teacher" &&
+				user.admin_id === +(localStorage.getItem("user_id") || "0")
+		)
 		.sort(
 			(a, b) =>
 				new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()

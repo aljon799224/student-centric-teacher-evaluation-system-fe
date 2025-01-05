@@ -68,6 +68,7 @@ export default function AdminTeacherCreateView({
 				password: formData.password,
 				role: formData.role,
 				temp_pwd: formData.tempPwd,
+				admin_id: localStorage.getItem("user_id"),
 			};
 
 			const response = await axios.post(
