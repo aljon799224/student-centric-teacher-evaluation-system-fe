@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import AdminQuestionCreateView from "./AdminQuestionCreateView";
+import AdminQuestionUpdateView from "./AdminQuestionUpdateView";
+import AdminQuestionDeleteView from "./AdminQuestionDeleteView";
 
 export default function AdminQuestionListView() {
 	const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
@@ -206,11 +208,11 @@ export default function AdminQuestionListView() {
 			{isModalUpdateOpen && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10 modal-backdrop">
 					<div className="bg-white p-6 rounded-lg shadow-lg">
-						{/* <AdminEvaluationUpdateView
+						<AdminQuestionUpdateView
 							toggleModalUpdate={toggleModalUpdate}
-							updateEvaluation={updateEvaluation}
-							evaluationId={selectedUserId}
-						/> */}
+							updateQuestion={updateQuestion}
+							questionId={selectedQuestionId}
+						/>
 					</div>
 				</div>
 			)}
@@ -218,11 +220,11 @@ export default function AdminQuestionListView() {
 			{isModalDeleteOpen && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10 modal-backdrop">
 					<div className="bg-white p-6 rounded-lg shadow-lg">
-						{/* <AdminEvaluationDeleteView
+						<AdminQuestionDeleteView
 							toggleModalDelete={toggleModalDelete}
-							evaluationId={selectedUserId}
-							deleteEvaluation={deleteEvaluation}
-						/> */}
+							questionId={selectedQuestionId}
+							deleteQuestion={deleteQuestion}
+						/>
 					</div>
 				</div>
 			)}
