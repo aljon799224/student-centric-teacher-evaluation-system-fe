@@ -1,30 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 
-interface CreateEvaluationFormState {
-	title: string;
-	teacherId: number;
+interface CreateQuestionFormState {
+	questionText: string;
 }
 
-interface UserFormState {
-	username: string;
-	email: string;
-	firstName: string;
-	middleName: string;
-	lastName: string;
-	role: string;
-	admin_id: number;
-}
-
-export default function AdminEvaluationCreateView({
+export default function AdminQuestionCreateView({
 	toggleModalCreate,
-	addEvaluation,
+	addQuestion,
+	evaluationTitle,
+	evaluationId,
 }: any) {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
-	const [users, setUsers] = useState<any[]>([]);
 
 	const navigate = useNavigate();
 
@@ -33,59 +23,11 @@ export default function AdminEvaluationCreateView({
 
 	const closeToast = () => setIsToastVisible(false);
 
-	const [formData, setFormData] = useState<CreateEvaluationFormState>({
-		title: "",
-		teacherId: 0,
+	const [formData, setFormData] = useState<CreateQuestionFormState>({
+		questionText: "",
 	});
 
 	const token = localStorage.getItem("token");
-
-	useEffect(() => {
-		async function fetchTeachers() {
-			if (!token) {
-				setErrorMessage("Not authenticated");
-				setIsToastVisible(true);
-				throw new Error("Not authenticated");
-			}
-			try {
-				const response = await fetch(
-					"http://0.0.0.0:8000/api/v1/user?page=1&size=50",
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
-				const data = await response.json();
-
-				const filteredTeachers = data.items
-					.filter(
-						(user: UserFormState) =>
-							user.role === "teacher" &&
-							user.admin_id === +(localStorage.getItem("user_id") || "0")
-					)
-					.sort(
-						(a: any, b: any) =>
-							new Date(b.updated_at).getTime() -
-							new Date(a.updated_at).getTime()
-					);
-
-				// Set default teacherId if teachers are available
-				if (filteredTeachers.length > 0) {
-					setFormData((prevData) => ({
-						...prevData,
-						teacherId: prevData.teacherId || filteredTeachers[0].id, // Preserve existing value or set default
-					}));
-				}
-
-				setUsers(filteredTeachers);
-			} catch (error) {
-				setErrorMessage("Failed to fetch teachers.");
-				console.error("Failed to fetch teachers:", error);
-			}
-		}
-		fetchTeachers();
-	}, []);
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -107,13 +49,13 @@ export default function AdminEvaluationCreateView({
 				throw new Error("Not authenticated");
 			}
 			const backendPayload = {
-				title: formData.title,
-				teacher_id: formData.teacherId,
-				admin_id: localStorage.getItem("user_id"),
+				question_text: formData.questionText,
+				evaluation_id: evaluationId,
+				evaluation_title: evaluationTitle,
 			};
 
 			const response = await axios.post(
-				"http://0.0.0.0:8000/api/v1/evaluation",
+				"http://0.0.0.0:8000/api/v1/question",
 				backendPayload,
 				{
 					headers: {
@@ -122,11 +64,16 @@ export default function AdminEvaluationCreateView({
 				}
 			);
 
-			addEvaluation(response.data);
+			addQuestion(response.data);
 
 			toggleModalCreate();
-			navigate("/admin/evaluations", {
-				state: { message: "Evaluation has been created successfully!" },
+
+			navigate("/admin/questions", {
+				state: {
+					message: "Question has been created successfully!",
+					// evaluationId: evaluationId,
+					// evaluationTitle: evaluationTitle,
+				},
 			});
 		} catch (error: any) {
 			setErrorMessage(error.message);
@@ -134,17 +81,6 @@ export default function AdminEvaluationCreateView({
 			console.error(error);
 		}
 	};
-
-	// const filteredTeachers = users
-	// 	.filter(
-	// 		(user) =>
-	// 			user.role === "teacher" &&
-	// 			user.admin_id === +(localStorage.getItem("user_id") || "0")
-	// 	)
-	// 	.sort(
-	// 		(a, b) =>
-	// 			new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-	// 	);
 
 	return (
 		<div
@@ -202,7 +138,7 @@ export default function AdminEvaluationCreateView({
 				<div className="relative p-4 bg-white rounded-lg shadow sm:p-5 border-2">
 					<div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5">
 						<h3 className="text-lg font-semibold text-gray-900">
-							Add Evaluation
+							Add Question
 						</h3>
 						<button
 							type="button"
@@ -234,56 +170,58 @@ export default function AdminEvaluationCreateView({
 									htmlFor="name"
 									className="block mb-2 text-sm font-medium text-gray-900"
 								>
-									Title
+									Question
 								</label>
 								<input
-									name="title"
+									name="questionText"
 									type="text"
 									className="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
-									placeholder="Enter title"
+									placeholder="Enter question"
 									onChange={handleChange}
-									value={formData.title}
+									value={formData.questionText}
 									required
 									maxLength={200}
 								/>
 							</div>
-							<div>
-								{/* <label className="block mb-2 text-sm font-medium text-gray-900">
-									Teacher
-								</label>
-								<input
-									name="teacher_id"
-									type="text"
-									className="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
-									placeholder=""
-									onChange={handleChange}
-									value={formData.teacher_id}
-									required
-								/> */}
+
+							{/* <div>
 								<label
 									htmlFor="name"
 									className="block mb-2 text-sm font-medium text-gray-900"
 								>
-									Teacher
+									Rating
 								</label>
 								<select
-									name="teacherId"
+									name="rating"
 									className="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
 									onChange={handleChange}
-									value={formData.teacherId || (users[0]?.id ?? "")}
+									value={formData.rating || 1}
 									required
 								>
-									{users.map((teacher: any) => (
-										<option key={teacher.id} value={teacher.id}>
-											{teacher.first_name +
-												" " +
-												teacher.middle_name +
-												" " +
-												teacher.last_name}
+									{[1, 2, 3, 4, 5].map((rate: any) => (
+										<option key={rate} value={rate}>
+											{rate}
 										</option>
 									))}
 								</select>
-							</div>
+							</div> */}
+
+							{/* <div>
+								<label
+									htmlFor="name"
+									className="block mb-2 text-sm font-medium text-gray-900"
+								>
+									Comment
+								</label>
+								<input
+									name="comment"
+									type="text"
+									className="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
+									placeholder="Enter comment"
+									onChange={handleChange}
+									value={formData.comment}
+								/>
+							</div> */}
 						</div>
 
 						<button
