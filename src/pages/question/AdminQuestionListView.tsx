@@ -1,22 +1,29 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
-import AdminEvaluationCreateView from "./AdminEvaluationCreateView";
-import AdminEvaluationUpdateView from "./AdminEvaluationUpdateView";
-import AdminEvaluationDeleteView from "./AdminEvaluationDeleteView";
+import AdminQuestionCreateView from "./AdminQuestionCreateView";
 
-export default function AdminEvaluationListView() {
+export default function AdminQuestionListView() {
 	const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
 	const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
 	const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
-	const [evaluations, setEvaluations] = useState<any[]>([]);
+	const [questions, setQuestions] = useState<any[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(
+		null
+	);
 	const [selectedEvaluationId, setSelectedEvaluationId] = useState<
+		string | null
+	>(null);
+	const [selectedEvaluationTitle, setSelectedEvaluationTitle] = useState<
 		string | null
 	>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
 	const navigate = useNavigate();
+
+	const location = useLocation();
+	const { evaluationId, evaluationTitle } = location.state || {};
 
 	const closeToast = () => setIsToastVisible(false);
 
@@ -35,7 +42,7 @@ export default function AdminEvaluationListView() {
 		setIsModalDeleteOpen(!isModalDeleteOpen);
 	};
 
-	const fetchEvaluations = async () => {
+	const fetchQuestions = async () => {
 		try {
 			// Check for authentication token (e.g., in localStorage or cookies)
 			const token = localStorage.getItem("token");
@@ -44,7 +51,7 @@ export default function AdminEvaluationListView() {
 			}
 
 			const response = await fetch(
-				"http://0.0.0.0:8000/api/v1/evaluation?page=1&size=50",
+				"http://0.0.0.0:8000/api/v1/question?page=1&size=50",
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -59,9 +66,9 @@ export default function AdminEvaluationListView() {
 			const data = await response.json();
 
 			if (Array.isArray(data.items)) {
-				setEvaluations(data.items);
+				setQuestions(data.items);
 			} else {
-				setEvaluations([]);
+				setQuestions([]);
 			}
 		} catch (error: any) {
 			setErrorMessage(error.message);
@@ -73,39 +80,38 @@ export default function AdminEvaluationListView() {
 				// Redirect to login page if not authenticated
 				navigate("/login");
 			} else {
-				setEvaluations([]);
+				setQuestions([]);
 			}
 		}
 	};
 
 	useEffect(() => {
-		fetchEvaluations();
+		setSelectedEvaluationId(evaluationId);
+		setSelectedEvaluationTitle(evaluationTitle);
+		fetchQuestions();
 	}, []);
 
-	const addEvaluation = (newEvaluation: any) => {
-		setEvaluations((prevEvaluations) => [...prevEvaluations, newEvaluation]);
+	const addQuestion = (newQuestion: any) => {
+		setQuestions((prevQuestions) => [...prevQuestions, newQuestion]);
 	};
 
-	const updateEvaluation = (updatedEvaluation: any) => {
-		setEvaluations((prevEvaluations) =>
-			prevEvaluations.map((evaluation) =>
-				evaluation.id === updatedEvaluation.id ? updatedEvaluation : evaluation
+	const updateQuestion = (updatedQuestion: any) => {
+		setQuestions((prevQuestions) =>
+			prevQuestions.map((question) =>
+				question.id === updatedQuestion.id ? updatedQuestion : question
 			)
 		);
 	};
 
-	const deleteEvaluation = (deletedEvaluation: any) => {
-		setEvaluations((prevEvaluations) =>
-			prevEvaluations.filter(
-				(evaluation) => evaluation.id !== deletedEvaluation.id
-			)
+	const deleteQuestion = (deletedQuestion: any) => {
+		setQuestions((prevQuestions) =>
+			prevQuestions.filter((question) => question.id !== deletedQuestion.id)
 		);
 	};
 
-	const filteredEvaluations = evaluations
+	const filteredQuestions = questions
 		.filter(
-			(evaluation) =>
-				evaluation.admin_id === +(localStorage.getItem("user_id") || "0")
+			(question) => question.evaluation_id === Number(selectedEvaluationId)
 		)
 		.sort(
 			(a, b) =>
@@ -159,7 +165,9 @@ export default function AdminEvaluationListView() {
 					</button>
 				</div>
 			)}
-
+			<div className="mb-5">
+				<h2 className="text-4xl text-dark">{selectedEvaluationTitle}</h2>
+			</div>
 			<button
 				className="bg-blue-500 hover:bg-blue-600 text-white mb-3 py-2 px-4 rounded-lg inline-flex items-center"
 				onClick={toggleModalCreate}
@@ -179,15 +187,17 @@ export default function AdminEvaluationListView() {
 					/>
 				</svg>
 
-				<span>Add Evaluation</span>
+				<span>Add Question</span>
 			</button>
 
 			{isModalCreateOpen && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10 modal-backdrop">
 					<div className="bg-white p-6 rounded-lg shadow-lg">
-						<AdminEvaluationCreateView
+						<AdminQuestionCreateView
 							toggleModalCreate={toggleModalCreate}
-							addEvaluation={addEvaluation}
+							addQuestion={addQuestion}
+							evaluationTitle={selectedEvaluationTitle}
+							evaluationId={selectedEvaluationId}
 						/>
 					</div>
 				</div>
@@ -196,11 +206,11 @@ export default function AdminEvaluationListView() {
 			{isModalUpdateOpen && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10 modal-backdrop">
 					<div className="bg-white p-6 rounded-lg shadow-lg">
-						<AdminEvaluationUpdateView
+						{/* <AdminEvaluationUpdateView
 							toggleModalUpdate={toggleModalUpdate}
 							updateEvaluation={updateEvaluation}
-							evaluationId={selectedEvaluationId}
-						/>
+							evaluationId={selectedUserId}
+						/> */}
 					</div>
 				</div>
 			)}
@@ -208,11 +218,11 @@ export default function AdminEvaluationListView() {
 			{isModalDeleteOpen && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10 modal-backdrop">
 					<div className="bg-white p-6 rounded-lg shadow-lg">
-						<AdminEvaluationDeleteView
+						{/* <AdminEvaluationDeleteView
 							toggleModalDelete={toggleModalDelete}
-							evaluationId={selectedEvaluationId}
+							evaluationId={selectedUserId}
 							deleteEvaluation={deleteEvaluation}
-						/>
+						/> */}
 					</div>
 				</div>
 			)}
@@ -221,10 +231,10 @@ export default function AdminEvaluationListView() {
 				<thead className="bg-red-800 whitespace-nowrap">
 					<tr>
 						<th className="p-4 text-left text-sm font-medium text-white">
-							Title
+							Question
 						</th>
 						<th className="p-4 text-left text-sm font-medium text-white">
-							Teacher
+							Evaluation Title
 						</th>
 						<th className="p-4 text-left text-sm font-medium text-white">
 							Created At
@@ -239,48 +249,26 @@ export default function AdminEvaluationListView() {
 				</thead>
 
 				<tbody className="whitespace-nowrap">
-					{filteredEvaluations.map((evaluation) => (
-						<tr className="even:bg-blue-50" key={evaluation.id}>
-							<td className="p-4 text-sm text-black">{evaluation.title}</td>
+					{filteredQuestions.map((question) => (
+						<tr className="even:bg-blue-50" key={question.id}>
 							<td className="p-4 text-sm text-black">
-								{evaluation.teacher_name}
+								{question.question_text}
 							</td>
 							<td className="p-4 text-sm text-black">
-								{formattedDate(evaluation.created_at)}
+								{question.evaluation_title}
 							</td>
 							<td className="p-4 text-sm text-black">
-								{formattedDate(evaluation.updated_at)}
+								{formattedDate(question.created_at)}
+							</td>
+							<td className="p-4 text-sm text-black">
+								{formattedDate(question.updated_at)}
 							</td>
 							<td className="p-4">
-								<Link
-									to={`/admin/questions`}
-									state={{
-										evaluationId: evaluation.id,
-										evaluationTitle: evaluation.title,
-									}}
-								>
-									<button className="mr-4" title="click ">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											fill="none"
-											viewBox="0 0 24 24"
-											strokeWidth="1.5"
-											stroke="currentColor"
-											className="size-6"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672Zm-7.518-.267A8.25 8.25 0 1 1 20.25 10.5M8.288 14.212A5.25 5.25 0 1 1 17.25 10.5"
-											/>
-										</svg>
-									</button>
-								</Link>
 								<button
 									className="mr-4"
 									title="Edit "
 									onClick={() => {
-										setSelectedEvaluationId(evaluation.id);
+										setSelectedQuestionId(question.id);
 										toggleModalUpdate();
 									}}
 								>
@@ -303,7 +291,7 @@ export default function AdminEvaluationListView() {
 									className="mr-4"
 									title="Delete"
 									onClick={() => {
-										setSelectedEvaluationId(evaluation.id);
+										setSelectedQuestionId(question.id);
 										toggleModalDelete();
 									}}
 								>
