@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
 	};
 
 	return (
-		<div className="flex flex-col justify-center font-[sans-serif] sm:h-screen p-4">
+		<div className="flex flex-col justify-center font-[sans-serif] p-4">
 			{/* toast */}
 
 			{isToastVisible && errorMessage && (
@@ -163,7 +163,7 @@ export default function ForgotPasswordPage() {
 
 			{/* end toast */}
 
-			<div className="max-w-md w-full mx-auto border border-gray-300 rounded-2xl p-8">
+			<div className="max-w-md w-full mx-auto mt-3 border border-gray-300 rounded-2xl p-8">
 				<div className="text-center mb-12">
 					<h1>Change Password</h1>
 				</div>
