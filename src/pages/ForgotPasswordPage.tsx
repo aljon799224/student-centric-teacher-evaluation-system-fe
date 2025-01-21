@@ -1,37 +1,26 @@
-import React, { useEffect, useState } from "react";
-import aclcLogo from "../assets/aclc.svg";
+import React, { useState } from "react";
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAutoHideToast } from "../hooks/useAutoHideToast";
 
-interface LoginFormState {
-	username: string;
-	password: string;
+interface ForgotPasswordFormState {
+	newPassword: string;
 }
 
-export default function LoginPage() {
-	const [formData, setFormData] = useState<LoginFormState>({
-		username: "",
-		password: "",
+export default function ForgotPasswordPage() {
+	const [formData, setFormData] = useState<ForgotPasswordFormState>({
+		newPassword: "",
 	});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
+	const [tokenValue, setTokenValue] = useState<string | null>(null);
 
 	const [isToastVisible, setIsToastVisible] = useState(false);
 
 	const navigate = useNavigate();
-	const location = useLocation();
 
 	// Automatically hide toast after 3 seconds
 	useAutoHideToast(isToastVisible, setIsToastVisible);
-
-	useEffect(() => {
-		if (location.state?.message) {
-			setSuccessMessage(location.state.message);
-			setIsToastVisible(true);
-			navigate(location.pathname, { replace: true, state: { message: null } });
-		}
-	}, [location.state, navigate]);
 
 	const closeToast = () => setIsToastVisible(false);
 
@@ -42,40 +31,36 @@ export default function LoginPage() {
 		});
 	};
 
-	const handleLogin = async (e: React.FormEvent) => {
+	const handleResetPassword = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		try {
+			const token = localStorage.getItem("token");
+			if (!token) {
+				setErrorMessage("Not authenticated. Please login again");
+				setIsToastVisible(true);
+				throw new Error("Not authenticated");
+			}
+
+			const payload = {
+				token: token,
+				new_password: formData.newPassword,
+			};
 			const response = await axios.post(
-				"http://0.0.0.0:8000/api/v1/auth/login/token",
-				formData,
+				"http://0.0.0.0:8000/api/v1/reset-password",
+				payload,
 				{
 					headers: {
-						"Content-Type": "application/x-www-form-urlencoded",
+						Accept: "application/json",
+						"Content-Type": "application/json",
 					},
 				}
 			);
-			const token = response.data.access_token;
-			if (response.data.temp_pwd) {
-				console.log("asdasdas");
-				navigate("/reset-password", {
-					state: { message: "Please reset your password!" },
-				});
-				localStorage.setItem("token", token);
-				localStorage.setItem("user_id", response.data.user_id);
-				localStorage.setItem("temp_pwd", response.data.temp_pwd);
-				return;
-			}
-			console.log(token);
-			localStorage.setItem("token", token);
-			localStorage.setItem("name", response.data.name);
-			localStorage.setItem("user_id", response.data.user_id);
-			localStorage.setItem("temp_pwd", response.data.temp_pwd);
-
-			navigate("/admin", { state: { message: "Login Successful!" } });
-		} catch (error) {
+			console.log(response);
+			navigate("/login", { state: { message: "Update Password Successful!" } });
+		} catch (error: any) {
 			setSuccessMessage("");
-			setErrorMessage("Invalid username or password.");
+			setErrorMessage(error.message);
 			setIsToastVisible(true);
 		}
 	};
@@ -180,42 +165,24 @@ export default function LoginPage() {
 
 			<div className="max-w-md w-full mx-auto border border-gray-300 rounded-2xl p-8">
 				<div className="text-center mb-12">
-					<a href="javascript:void(0)">
-						<img src={aclcLogo} alt="logo" className="w-40 inline-block" />
-					</a>
+					<h1>Change Password</h1>
 				</div>
-				<form onSubmit={handleLogin}>
+				<form onSubmit={handleResetPassword}>
 					<div className="space-y-6">
-						<div>
-							<label
-								className="text-gray-800 text-sm mb-2 block"
-								htmlFor="username"
-							>
-								Username
-							</label>
-							<input
-								name="username"
-								type="text"
-								className="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
-								placeholder="Enter username"
-								onChange={handleChange}
-								value={formData.username}
-							/>
-						</div>
 						<div>
 							<label
 								className="text-gray-800 text-sm mb-2 block"
 								htmlFor="password"
 							>
-								Password
+								New Password
 							</label>
 							<input
-								name="password"
+								name="newPassword"
 								type="password"
 								className="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
-								placeholder="Enter password"
+								placeholder="Enter new password"
 								onChange={handleChange}
-								value={formData.password}
+								value={formData.newPassword}
 							/>
 						</div>
 					</div>
@@ -225,18 +192,9 @@ export default function LoginPage() {
 							type="submit"
 							className="w-full py-3 px-4 text-sm tracking-wider font-semibold rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none"
 						>
-							Log In
+							Change Password
 						</button>
 					</div>
-					<p className="text-gray-800 text-sm mt-6 text-center">
-						or{" "}
-						<a
-							href="/register"
-							className="text-blue-600 font-semibold hover:underline ml-1"
-						>
-							Create new account
-						</a>
-					</p>
 				</form>
 			</div>
 		</div>
