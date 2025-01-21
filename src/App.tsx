@@ -16,6 +16,8 @@ import AdminTeacherListView from "./pages/teacher/AdminTeacherListView";
 import AdminStudentListView from "./pages/student/AdminStudentListView";
 import AdminEvaluationListView from "./pages/evaluation/AdminEvaluationListView";
 import AdminQuestionListView from "./pages/question/AdminQuestionListView";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ForgotPasswordMainPage from "./pages/ForgotPasswordMainPage";
 
 const router = createBrowserRouter([
 	{
@@ -29,6 +31,10 @@ const router = createBrowserRouter([
 	{
 		path: "/login",
 		element: <LoginPage />,
+	},
+	{
+		path: "/reset-password",
+		element: <ForgotPasswordMainPage />,
 	},
 	{
 		path: "/",
@@ -57,6 +63,10 @@ const router = createBrowserRouter([
 					{
 						path: "questions",
 						element: <AdminQuestionListView />,
+					},
+					{
+						path: "reset-password",
+						element: <ForgotPasswordPage />,
 					},
 				],
 			},

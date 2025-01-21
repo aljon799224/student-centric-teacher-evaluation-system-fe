@@ -21,6 +21,8 @@ export default function AdminTeacherListView() {
 	// Automatically hide toast after 3 seconds
 	useAutoHideToast(isToastVisible, setIsToastVisible);
 
+	const token = localStorage.getItem("token");
+
 	const toggleModalCreate = () => {
 		setIsModalCreateOpen(!isModalCreateOpen);
 	};
@@ -36,8 +38,9 @@ export default function AdminTeacherListView() {
 	const fetchUsers = async () => {
 		try {
 			// Check for authentication token (e.g., in localStorage or cookies)
-			const token = localStorage.getItem("token");
+
 			if (!token) {
+				navigate("/login");
 				throw new Error("Not authenticated");
 			}
 
