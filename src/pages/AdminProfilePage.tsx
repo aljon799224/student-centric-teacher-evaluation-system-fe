@@ -59,7 +59,7 @@ export default function AdminProfilePage() {
 					role: role,
 				});
 			} catch (error: any) {
-				console.log(error.message);
+				console.error(error.message);
 				setErrorMessage(
 					"The username and password must be unique. Please ensure they are not already in use or verify your internet connection and try again."
 				);

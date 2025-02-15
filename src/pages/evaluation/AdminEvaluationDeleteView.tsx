@@ -36,8 +36,6 @@ export default function AdminEvaluationDeleteView({
 				}
 			);
 
-			console.log("asdasdasdasd");
-
 			deleteEvaluation(response.data);
 
 			if (response.status === 200) {

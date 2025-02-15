@@ -52,8 +52,6 @@ export default function TeacherEvaluationListView() {
 							new Date(a.updated_at).getTime()
 					);
 
-				console.log(filteredEvaluations);
-
 				setEvaluations(filteredEvaluations);
 			} else {
 				setEvaluations([]);
@@ -76,8 +74,6 @@ export default function TeacherEvaluationListView() {
 	useEffect(() => {
 		fetchEvaluations();
 	}, [userId]);
-
-	console.log(userId);
 
 	return (
 		<div className="overflow-x-auto">

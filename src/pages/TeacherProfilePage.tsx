@@ -59,7 +59,7 @@ export default function TeacherProfilePage() {
 					role: role,
 				});
 			} catch (error: any) {
-				console.log(error.message);
+				console.error(error.message);
 				setErrorMessage(error.message);
 				setIsToastVisible(true);
 			} finally {

@@ -63,7 +63,6 @@ export default function AdminStudentUpdateView({
 					lastName: last_name,
 				});
 			} catch (error: any) {
-				console.log(error.message);
 				setErrorMessage(
 					"The username and password must be unique. Please ensure they are not already in use or verify your internet connection and try again."
 				);

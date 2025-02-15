@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
 					},
 				}
 			);
-			console.log(response);
+			console.error(response);
 			navigate("/login", { state: { message: "Update Password Successful!" } });
 		} catch (error: any) {
 			setSuccessMessage("");
@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
 			setIsToastVisible(true);
 		}
 	};
-	console.log(token);
+
 	return (
 		<div className="flex flex-col justify-center font-[sans-serif] p-4">
 			{/* toast */}

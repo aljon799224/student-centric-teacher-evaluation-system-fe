@@ -36,8 +36,6 @@ export default function AdminStudentDeleteView({
 				}
 			);
 
-			console.log("asdasdasdasd");
-
 			deleteUser(response.data);
 
 			if (response.status === 200) {

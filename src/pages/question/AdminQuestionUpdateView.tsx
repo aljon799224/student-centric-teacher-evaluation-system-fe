@@ -53,7 +53,7 @@ export default function AdminQuestionUpdateView({
 					questionText: question_text,
 				});
 			} catch (error: any) {
-				console.log(error.message);
+				console.error(error.message);
 				setErrorMessage(error.message);
 				setIsToastVisible(true);
 			} finally {

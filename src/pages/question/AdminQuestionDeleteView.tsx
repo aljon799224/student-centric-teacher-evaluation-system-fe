@@ -36,8 +36,6 @@ export default function AdminQuestionDeleteView({
 				}
 			);
 
-			console.log("asdasdasdasd");
-
 			deleteQuestion(response.data);
 
 			if (response.status === 200) {

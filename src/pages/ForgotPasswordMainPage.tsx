@@ -45,10 +45,8 @@ export default function ForgotPasswordMainPage() {
 		e.preventDefault();
 
 		const userId = localStorage.getItem("user_id");
-		console.log("tokenm", token);
 
 		try {
-			console.log("asdasd", token);
 			if (!token) {
 				setErrorMessage("Not authenticated. Please login again");
 				setIsToastVisible(true);
@@ -59,23 +57,18 @@ export default function ForgotPasswordMainPage() {
 				token: token,
 				new_password: formData.newPassword,
 			};
-			const response = await axios.post(
-				"http://0.0.0.0:8000/api/v1/reset-password",
-				payload,
-				{
-					headers: {
-						Accept: "application/json",
-						"Content-Type": "application/json",
-					},
-				}
-			);
-			console.log(response);
+			await axios.post("http://0.0.0.0:8000/api/v1/reset-password", payload, {
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+			});
 
 			const backendPayload = {
 				temp_pwd: false,
 			};
 
-			const updateUserResponse = await axios.put(
+			await axios.put(
 				`http://0.0.0.0:8000/api/v1/user/${userId}`,
 				backendPayload,
 				{
@@ -84,7 +77,7 @@ export default function ForgotPasswordMainPage() {
 					},
 				}
 			);
-			console.log(updateUserResponse);
+
 			navigate("/login", { state: { message: "Update Password Successful!" } });
 		} catch (error: any) {
 			setSuccessMessage("");

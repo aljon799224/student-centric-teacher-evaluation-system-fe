@@ -63,7 +63,6 @@ export default function AdminTeacherUpdateView({
 					lastName: last_name,
 				});
 			} catch (error: any) {
-				console.log(error.message);
 				setErrorMessage(error.message);
 				setIsToastVisible(true);
 			} finally {
