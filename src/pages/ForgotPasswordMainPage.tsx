@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAutoHideToast } from "../hooks/useAutoHideToast";
 
 interface ForgotPasswordFormState {
@@ -17,6 +17,7 @@ export default function ForgotPasswordMainPage() {
 	const [isToastVisible, setIsToastVisible] = useState(false);
 
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const token = localStorage.getItem("token");
 
@@ -24,6 +25,14 @@ export default function ForgotPasswordMainPage() {
 	useAutoHideToast(isToastVisible, setIsToastVisible);
 
 	const closeToast = () => setIsToastVisible(false);
+
+	useEffect(() => {
+		if (location.state?.message) {
+			setSuccessMessage(location.state.message);
+			setIsToastVisible(true);
+			navigate(location.pathname, { replace: true, state: { message: null } });
+		}
+	}, [location.state, navigate]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFormData({

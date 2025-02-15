@@ -83,7 +83,9 @@ export default function AdminTeacherCreateView({
 				state: { message: "Teacher has been created successfully!" },
 			});
 		} catch (error: any) {
-			setErrorMessage(error.message);
+			setErrorMessage(
+				"The username and password must be unique. Please ensure they are not already in use or verify your internet connection and try again."
+			);
 			setIsToastVisible(true);
 			console.error(error);
 		}

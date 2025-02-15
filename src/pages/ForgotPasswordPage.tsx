@@ -18,6 +18,7 @@ export default function ForgotPasswordPage() {
 	const [isToastVisible, setIsToastVisible] = useState(false);
 
 	const navigate = useNavigate();
+	const token = localStorage.getItem("token");
 
 	// Automatically hide toast after 3 seconds
 	useAutoHideToast(isToastVisible, setIsToastVisible);
@@ -35,7 +36,6 @@ export default function ForgotPasswordPage() {
 		e.preventDefault();
 
 		try {
-			const token = localStorage.getItem("token");
 			if (!token) {
 				setErrorMessage("Not authenticated. Please login again");
 				setIsToastVisible(true);
@@ -60,11 +60,11 @@ export default function ForgotPasswordPage() {
 			navigate("/login", { state: { message: "Update Password Successful!" } });
 		} catch (error: any) {
 			setSuccessMessage("");
-			setErrorMessage(error.message);
+			setErrorMessage("Please login again or refresh your page.");
 			setIsToastVisible(true);
 		}
 	};
-
+	console.log(token);
 	return (
 		<div className="flex flex-col justify-center font-[sans-serif] p-4">
 			{/* toast */}

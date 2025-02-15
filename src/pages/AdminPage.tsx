@@ -14,6 +14,14 @@ export default function AdminPage() {
 
 	const closeToast = () => setIsToastVisible(false);
 
+	const role = localStorage.getItem("role");
+
+	useEffect(() => {
+		if (role !== "admin") {
+			navigate("/not-authorize");
+		}
+	});
+
 	useEffect(() => {
 		if (location.state?.message) {
 			setSuccessMessage(location.state.message);
@@ -245,7 +253,7 @@ export default function AdminPage() {
 								<ul className="mt-3 space-y-2">
 									<li>
 										<a
-											href="javascript:void(0)"
+											href="/admin/profile"
 											className="text-gray-800 text-sm flex items-center hover:bg-gray-100 rounded-md px-4 py-2 transition-all"
 										>
 											<svg
