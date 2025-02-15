@@ -11,18 +11,26 @@ import ProtectedRoute from "./authentication/ProtectedRoute";
 import TeacherPage from "./pages/TeacherPage";
 import StudentPage from "./pages/StudentPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import DashboardPage from "./pages/dashboard/DashboardPage";
 import AdminTeacherListView from "./pages/teacher/AdminTeacherListView";
 import AdminStudentListView from "./pages/student/AdminStudentListView";
 import AdminEvaluationListView from "./pages/evaluation/AdminEvaluationListView";
 import AdminQuestionListView from "./pages/question/AdminQuestionListView";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ForgotPasswordMainPage from "./pages/ForgotPasswordMainPage";
+import NotAuthorizePage from "./pages/NotAuthorizePage";
+import AdminDashboardPage from "./pages/dashboard/AdminDashboardPage";
+import StudentDashboardPage from "./pages/dashboard/StudentDashboardPage";
+import StudentEvaluationListView from "./pages/evaluation/StudentEvaluationListView";
+import StudentEvaluationQAFormView from "./pages/evaluation/StudentEvaluationQAFormView";
 
 const router = createBrowserRouter([
 	{
 		path: "*",
 		element: <NotFoundPage />, // Create a NotFoundPage component
+	},
+	{
+		path: "/not-authorize",
+		element: <NotAuthorizePage />, // Create a NotFoundPage component
 	},
 	{
 		path: "/register",
@@ -46,7 +54,7 @@ const router = createBrowserRouter([
 				children: [
 					{
 						index: true,
-						element: <DashboardPage />,
+						element: <AdminDashboardPage />,
 					},
 					{
 						path: "teachers",
@@ -77,6 +85,24 @@ const router = createBrowserRouter([
 			{
 				path: "student",
 				element: <ProtectedRoute element={<StudentPage />} />,
+				children: [
+					{
+						index: true,
+						element: <StudentDashboardPage />,
+					},
+					{
+						path: "evaluations",
+						element: <StudentEvaluationListView />,
+					},
+					{
+						path: "questions",
+						element: <StudentEvaluationQAFormView />,
+					},
+					{
+						path: "reset-password",
+						element: <ForgotPasswordPage />,
+					},
+				],
 			},
 			{
 				index: true, // Default child route for the root "/"

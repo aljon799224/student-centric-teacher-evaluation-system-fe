@@ -57,7 +57,6 @@ export default function LoginPage() {
 			);
 			const token = response.data.access_token;
 			if (response.data.temp_pwd) {
-				console.log("asdasdas");
 				navigate("/reset-password", {
 					state: { message: "Please reset your password!" },
 				});
@@ -66,13 +65,20 @@ export default function LoginPage() {
 				localStorage.setItem("temp_pwd", response.data.temp_pwd);
 				return;
 			}
-			console.log(token);
+
 			localStorage.setItem("token", token);
 			localStorage.setItem("name", response.data.name);
 			localStorage.setItem("user_id", response.data.user_id);
 			localStorage.setItem("temp_pwd", response.data.temp_pwd);
+			localStorage.setItem("role", response.data.role);
 
-			navigate("/admin", { state: { message: "Login Successful!" } });
+			if (response.data.role === "admin") {
+				navigate("/admin", { state: { message: "Login Successful!" } });
+			} else if (response.data.role === "teacher") {
+				navigate("/teacher", { state: { message: "Login Successful!" } });
+			} else {
+				navigate("/student", { state: { message: "Login Successful!" } });
+			}
 		} catch (error) {
 			setSuccessMessage("");
 			setErrorMessage("Invalid username or password.");

@@ -14,6 +14,14 @@ export default function AdminPage() {
 
 	const closeToast = () => setIsToastVisible(false);
 
+	const role = localStorage.getItem("role");
+
+	useEffect(() => {
+		if (role !== "admin") {
+			navigate("/not-authorize");
+		}
+	});
+
 	useEffect(() => {
 		if (location.state?.message) {
 			setSuccessMessage(location.state.message);

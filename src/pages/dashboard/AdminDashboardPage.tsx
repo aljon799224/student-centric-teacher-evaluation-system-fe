@@ -1,4 +1,4 @@
-export default function DashboardPage() {
+export default function AdminDashboardPage() {
 	const name = localStorage.getItem("name");
 
 	return (
