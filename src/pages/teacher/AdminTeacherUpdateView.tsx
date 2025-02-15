@@ -141,7 +141,9 @@ export default function AdminTeacherUpdateView({
 				"An error occurred. Please try again.";
 
 			// Display error feedback
-			setErrorMessage(errorMsg);
+			setErrorMessage(
+				"The username and password must be unique. Please ensure they are not already in use or verify your internet connection and try again."
+			);
 			setIsToastVisible(true);
 
 			console.error("Error updating user:", error);

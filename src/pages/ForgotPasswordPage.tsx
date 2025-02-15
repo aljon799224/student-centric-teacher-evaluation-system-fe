@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
 			navigate("/login", { state: { message: "Update Password Successful!" } });
 		} catch (error: any) {
 			setSuccessMessage("");
-			setErrorMessage(error.message);
+			setErrorMessage("Please login again or refresh your page.");
 			setIsToastVisible(true);
 		}
 	};

@@ -11,7 +11,7 @@ interface UserFormState {
 	role: string;
 }
 
-export default function AdminProfilePage() {
+export default function TeacherProfilePage() {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
@@ -60,9 +60,7 @@ export default function AdminProfilePage() {
 				});
 			} catch (error: any) {
 				console.log(error.message);
-				setErrorMessage(
-					"The username and password must be unique. Please ensure they are not already in use or verify your internet connection and try again."
-				);
+				setErrorMessage(error.message);
 				setIsToastVisible(true);
 			} finally {
 				setIsLoading(false);
@@ -124,8 +122,8 @@ export default function AdminProfilePage() {
 				}
 			);
 
-			navigate("/admin/profile", {
-				state: { message: "Admin profile has been updated successfully!" },
+			navigate("/teacher/profile", {
+				state: { message: "Teacher profile has been updated successfully!" },
 			});
 		} catch (error: any) {
 			const errorMsg =
@@ -134,10 +132,12 @@ export default function AdminProfilePage() {
 				"An error occurred. Please try again.";
 
 			// Display error feedback
-			setErrorMessage(errorMsg);
+			setErrorMessage(
+				"The username and password must be unique. Please ensure they are not already in use or verify your internet connection and try again."
+			);
 			setIsToastVisible(true);
 
-			console.error("Error updating user:", error);
+			console.error("Error updating user:", errorMsg);
 		}
 	};
 

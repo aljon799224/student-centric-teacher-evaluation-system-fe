@@ -13,7 +13,7 @@ export default function StudentEvaluationQAFormView() {
 	const [isToastVisible, setIsToastVisible] = useState(false);
 	const [isSubmitted, setIsSubmitted] = useState(false);
 	const [answers, setAnswers] = useState<
-		Record<number, { rate: number; comment: string }>
+		Record<number, { rating: number; comment: string }>
 	>({});
 
 	const location = useLocation();
@@ -28,6 +28,7 @@ export default function StudentEvaluationQAFormView() {
 
 	// Check for authentication token (e.g., in localStorage or cookies)
 	const token = localStorage.getItem("token");
+	const userId = localStorage.getItem("userId");
 
 	const fetchEvaluation = async () => {
 		if (!token) {
@@ -114,12 +115,12 @@ export default function StudentEvaluationQAFormView() {
 		fetchEvaluation();
 	}, [evaluationId]);
 
-	const handleRateChange = (questionId: number, rate: number) => {
+	const handleratingChange = (questionId: number, rating: number) => {
 		setAnswers((prev) => ({
 			...prev,
 			[questionId]: {
 				...prev[questionId],
-				rate, // Update the rate for the specific question
+				rating, // Update the rating for the specific question
 			},
 		}));
 	};
@@ -145,7 +146,8 @@ export default function StudentEvaluationQAFormView() {
 
 				const backendPayload = {
 					evaluation_id: evaluationId,
-					rating: Number(answer?.rate) || 0,
+					student_ud: userId,
+					rating: Number(answer?.rating) || 0,
 					comment: answer?.comment || "",
 				};
 
@@ -254,7 +256,7 @@ export default function StudentEvaluationQAFormView() {
 			<div className="w-1/2 mx-auto">
 				<div className="p-6 border border-gray-300 sm:rounded-md">
 					<label htmlFor="rating" className="block mb-6">
-						Rate the Teacher (1: Poor → 5: Excellent)
+						rating the Teacher (1: Poor → 5: Excellent)
 					</label>
 					<div>
 						<form method="POST" onSubmit={handleSubmit}>
@@ -282,11 +284,11 @@ export default function StudentEvaluationQAFormView() {
                  focus:border-indigo-300 focus:ring focus:ring-offset-0 
                  focus:ring-indigo-200 focus:ring-opacity-50"
 															checked={
-																(answers[question.id]?.rate ??
+																(answers[question.id]?.rating ??
 																	question.rating) === value
 															}
 															onChange={() =>
-																handleRateChange(question.id, value)
+																handleratingChange(question.id, value)
 															} // Update state
 															required
 														/>

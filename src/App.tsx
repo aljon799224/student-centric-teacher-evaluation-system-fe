@@ -19,10 +19,15 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ForgotPasswordMainPage from "./pages/ForgotPasswordMainPage";
 import NotAuthorizePage from "./pages/NotAuthorizePage";
 import AdminDashboardPage from "./pages/dashboard/AdminDashboardPage";
-import StudentDashboardPage from "./pages/dashboard/StudentDashboardPage";
 import StudentEvaluationListView from "./pages/evaluation/StudentEvaluationListView";
 import StudentEvaluationQAFormView from "./pages/evaluation/StudentEvaluationQAFormView";
 import AdminProfilePage from "./pages/AdminProfilePage";
+import TeacherDashboardPage from "./pages/dashboard/TeacherDashboardPage";
+import StudentDashboardPage from "./pages/dashboard/StudentDashboardPage";
+import TeacherEvaluationListView from "./pages/evaluation/TeacherEvaluationListView";
+import TeacherEvaluationQAFormView from "./pages/evaluation/TeacherEvaluationQAFormView";
+import TeacherProfilePage from "./pages/TeacherProfilePage";
+import StudentProfilePage from "./pages/StudentProfilePage";
 
 const router = createBrowserRouter([
 	{
@@ -86,6 +91,28 @@ const router = createBrowserRouter([
 			{
 				path: "teacher",
 				element: <ProtectedRoute element={<TeacherPage />} />,
+				children: [
+					{
+						index: true,
+						element: <TeacherDashboardPage />,
+					},
+					{
+						path: "evaluations",
+						element: <TeacherEvaluationListView />,
+					},
+					{
+						path: "questions",
+						element: <TeacherEvaluationQAFormView />,
+					},
+					{
+						path: "reset-password",
+						element: <ForgotPasswordPage />,
+					},
+					{
+						path: "profile",
+						element: <TeacherProfilePage />,
+					},
+				],
 			},
 			{
 				path: "student",
@@ -106,6 +133,10 @@ const router = createBrowserRouter([
 					{
 						path: "reset-password",
 						element: <ForgotPasswordPage />,
+					},
+					{
+						path: "profile",
+						element: <StudentProfilePage />,
 					},
 				],
 			},

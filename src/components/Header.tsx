@@ -2,51 +2,51 @@ import { useNavigate } from "react-router-dom";
 import aclcLogo from "../assets/aclc.svg";
 
 export default function Header() {
-  const navigate = useNavigate();
+	const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Clear the token from localStorage
-    localStorage.removeItem("token");
+	const handleLogout = () => {
+		// Clear the token from localStorage
+		localStorage.removeItem("token");
 
-    // Redirect to the login page
-    navigate("/login");
-  };
+		// Redirect to the login page
+		navigate("/login");
+	};
 
-  return (
-    <div>
-      <header className="flex shadow-md py-1 px-4 sm:px-7 bg-white min-h-[70px] tracking-wide z-[110] fixed top-0 w-full">
-        <div className="flex flex-wrap items-center justify-between gap-4 w-full relative">
-          <a href="javascript:void(0)">
-            <img src={aclcLogo} alt="logo" className="w-36" />
-          </a>
+	return (
+		<div>
+			<header className="flex shadow-md py-1 px-4 sm:px-7 bg-white min-h-[70px] tracking-wide z-[110] fixed top-0 w-full">
+				<div className="flex flex-wrap items-center justify-between gap-4 w-full relative">
+					<a href="javascript:void(0)">
+						<img src={aclcLogo} alt="logo" className="w-36" />
+					</a>
 
-          <div
-            id="collapseMenu"
-            className="max-lg:hidden lg:!block max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-50 max-lg:before:inset-0 max-lg:before:z-50"
-          >
-            <button
-              id="toggleClose"
-              className="lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white p-3"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-3 fill-black"
-                viewBox="0 0 320.591 320.591"
-              >
-                <path
-                  d="M30.391 318.583a30.37 30.37 0 0 1-21.56-7.288c-11.774-11.844-11.774-30.973 0-42.817L266.643 10.665c12.246-11.459 31.462-10.822 42.921 1.424 10.362 11.074 10.966 28.095 1.414 39.875L51.647 311.295a30.366 30.366 0 0 1-21.256 7.288z"
-                  data-original="#000000"
-                ></path>
-                <path
-                  d="M287.9 318.583a30.37 30.37 0 0 1-21.257-8.806L8.83 51.963C-2.078 39.225-.595 20.055 12.143 9.146c11.369-9.736 28.136-9.736 39.504 0l259.331 257.813c12.243 11.462 12.876 30.679 1.414 42.922-.456.487-.927.958-1.414 1.414a30.368 30.368 0 0 1-23.078 7.288z"
-                  data-original="#000000"
-                ></path>
-              </svg>
-            </button>
+					<div
+						id="collapseMenu"
+						className="max-lg:hidden lg:!block max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-50 max-lg:before:inset-0 max-lg:before:z-50"
+					>
+						<button
+							id="toggleClose"
+							className="lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white p-3"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="w-3 fill-black"
+								viewBox="0 0 320.591 320.591"
+							>
+								<path
+									d="M30.391 318.583a30.37 30.37 0 0 1-21.56-7.288c-11.774-11.844-11.774-30.973 0-42.817L266.643 10.665c12.246-11.459 31.462-10.822 42.921 1.424 10.362 11.074 10.966 28.095 1.414 39.875L51.647 311.295a30.366 30.366 0 0 1-21.256 7.288z"
+									data-original="#000000"
+								></path>
+								<path
+									d="M287.9 318.583a30.37 30.37 0 0 1-21.257-8.806L8.83 51.963C-2.078 39.225-.595 20.055 12.143 9.146c11.369-9.736 28.136-9.736 39.504 0l259.331 257.813c12.243 11.462 12.876 30.679 1.414 42.922-.456.487-.927.958-1.414 1.414a30.368 30.368 0 0 1-23.078 7.288z"
+									data-original="#000000"
+								></path>
+							</svg>
+						</button>
 
-            <div className="max-lg:fixed max-lg:bg-white max-lg:w-1/2 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
-              <div className="flex items-center max-lg:flex-col-reverse max-lg:ml-auto gap-8">
-                {/* <div className="flex w-full bg-gray-100 px-4 py-2.5 rounded outline-none border focus-within:border-blue-600 focus-within:bg-transparent transition-all">
+						<div className="max-lg:fixed max-lg:bg-white max-lg:w-1/2 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
+							<div className="flex items-center max-lg:flex-col-reverse max-lg:ml-auto gap-8">
+								{/* <div className="flex w-full bg-gray-100 px-4 py-2.5 rounded outline-none border focus-within:border-blue-600 focus-within:bg-transparent transition-all">
             <input
               type="text"
               placeholder="Search something..."
@@ -62,16 +62,16 @@ export default function Header() {
             </svg>
           </div> */}
 
-                <div className="dropdown-menu relative flex shrink-0 group">
-                  <img
-                    src="https://readymadeui.com/team-1.webp"
-                    alt="profile-pic"
-                    className="w-9 h-9 max-lg:w-16 max-lg:h-16 rounded-full border-2 border-gray-300 cursor-pointer"
-                  />
+								<div className="dropdown-menu relative flex shrink-0 group">
+									<img
+										src="https://readymadeui.com/team-1.webp"
+										alt="profile-pic"
+										className="w-9 h-9 max-lg:w-16 max-lg:h-16 rounded-full border-2 border-gray-300 cursor-pointer"
+									/>
 
-                  <div className="dropdown-content hidden group-hover:block shadow-md p-2 bg-white rounded-md absolute top-9 right-0 w-56">
-                    <div className="w-full">
-                      <a
+									<div className="dropdown-content hidden group-hover:block shadow-md p-2 bg-white rounded-md absolute top-9 right-0 w-56">
+										<div className="w-full">
+											{/* <a
                         href="javascript:void(0)"
                         className="text-sm text-gray-800 cursor-pointer flex items-center p-2 rounded-md hover:bg-gray-100 dropdown-item transition duration-300 ease-in-out"
                       >
@@ -86,47 +86,47 @@ export default function Header() {
                           ></path>
                         </svg>
                         Account
-                      </a>
-                      <hr className="my-2 -mx-2" />
-                      <a
-                        href="javascript:void(0)"
-                        className="text-sm text-gray-800 cursor-pointer flex items-center p-2 rounded-md hover:bg-gray-100 dropdown-item transition duration-300 ease-in-out"
-                        onClick={handleLogout}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-4 h-4 mr-3 fill-current"
-                          viewBox="0 0 6 6"
-                        >
-                          <path
-                            d="M3.172.53a.265.266 0 0 0-.262.268v2.127a.265.266 0 0 0 .53 0V.798A.265.266 0 0 0 3.172.53zm1.544.532a.265.266 0 0 0-.026 0 .265.266 0 0 0-.147.47c.459.391.749.973.749 1.626 0 1.18-.944 2.131-2.116 2.131A2.12 2.12 0 0 1 1.06 3.16c0-.65.286-1.228.74-1.62a.265.266 0 1 0-.344-.404A2.667 2.667 0 0 0 .53 3.158a2.66 2.66 0 0 0 2.647 2.663 2.657 2.657 0 0 0 2.645-2.663c0-.812-.363-1.542-.936-2.03a.265.266 0 0 0-.17-.066z"
-                            data-original="#000000"
-                          />
-                        </svg>
-                        Logout
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <button id="toggleOpen" className="lg:hidden !ml-7 outline-none">
-            <svg
-              className="w-7 h-7"
-              fill="#000"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                clipRule="evenodd"
-              ></path>
-            </svg>
-          </button>
-        </div>
-      </header>
-    </div>
-  );
+                      </a> */}
+											<hr className="my-2 -mx-2" />
+											<a
+												href="javascript:void(0)"
+												className="text-sm text-gray-800 cursor-pointer flex items-center p-2 rounded-md hover:bg-gray-100 dropdown-item transition duration-300 ease-in-out"
+												onClick={handleLogout}
+											>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													className="w-4 h-4 mr-3 fill-current"
+													viewBox="0 0 6 6"
+												>
+													<path
+														d="M3.172.53a.265.266 0 0 0-.262.268v2.127a.265.266 0 0 0 .53 0V.798A.265.266 0 0 0 3.172.53zm1.544.532a.265.266 0 0 0-.026 0 .265.266 0 0 0-.147.47c.459.391.749.973.749 1.626 0 1.18-.944 2.131-2.116 2.131A2.12 2.12 0 0 1 1.06 3.16c0-.65.286-1.228.74-1.62a.265.266 0 1 0-.344-.404A2.667 2.667 0 0 0 .53 3.158a2.66 2.66 0 0 0 2.647 2.663 2.657 2.657 0 0 0 2.645-2.663c0-.812-.363-1.542-.936-2.03a.265.266 0 0 0-.17-.066z"
+														data-original="#000000"
+													/>
+												</svg>
+												Logout
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<button id="toggleOpen" className="lg:hidden !ml-7 outline-none">
+						<svg
+							className="w-7 h-7"
+							fill="#000"
+							viewBox="0 0 20 20"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								fillRule="evenodd"
+								d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+								clipRule="evenodd"
+							></path>
+						</svg>
+					</button>
+				</div>
+			</header>
+		</div>
+	);
 }

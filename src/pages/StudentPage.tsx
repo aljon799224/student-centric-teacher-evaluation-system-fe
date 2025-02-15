@@ -170,7 +170,7 @@ export default function StudentPage() {
 										<a
 											href="/student/reset-password"
 											className={`text-sm flex items-center rounded-md px-4 py-2 transition-all ${
-												location.pathname === "/admin/reset-password"
+												location.pathname === "/student/reset-password"
 													? "bg-red-800 text-white"
 													: "text-gray-800 hover:bg-gray-100"
 											}`}
@@ -201,8 +201,12 @@ export default function StudentPage() {
 								<ul className="mt-3 space-y-2">
 									<li>
 										<a
-											href="javascript:void(0)"
-											className="text-gray-800 text-sm flex items-center hover:bg-gray-100 rounded-md px-4 py-2 transition-all"
+											href="/student/profile"
+											className={`text-sm flex items-center rounded-md px-4 py-2 transition-all ${
+												location.pathname === "/student/profile"
+													? "bg-red-800 text-white"
+													: "text-gray-800 hover:bg-gray-100"
+											}`}
 										>
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
