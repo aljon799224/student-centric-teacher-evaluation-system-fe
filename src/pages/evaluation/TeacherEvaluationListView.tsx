@@ -1,100 +1,23 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
-
-interface UserFormState {
-	username: string;
-	email: string;
-	firstName: string;
-	middleName: string;
-	lastName: string;
-	role: string;
-	admin_id: number;
-}
 
 export default function TeacherEvaluationListView() {
 	const [evaluations, setEvaluations] = useState<any[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
-	const [users, setUsers] = useState<any[]>([]);
-	const [teacherId, setTeacherId] = useState<number | null>(null);
-	const [teacherName, setTeacherName] = useState<string | null>(
-		"Select a teacher"
-	);
 
 	const navigate = useNavigate();
-	const location = useLocation();
 
 	const closeToast = () => setIsToastVisible(false);
 
 	// Automatically hide toast after 3 seconds
 	useAutoHideToast(isToastVisible, setIsToastVisible);
 
-	const teacherIdFromState = location.state?.teacherId ?? 0;
-
 	// Check for authentication token (e.g., in localStorage or cookies)
 	const token = localStorage.getItem("token");
-
-	const fetchTeacher = async () => {
-		if (!token) {
-			setErrorMessage("Not authenticated");
-			setIsToastVisible(true);
-			throw new Error("Not authenticated");
-		}
-		try {
-			if (teacherIdFromState) {
-				const response = await fetch(
-					`http://0.0.0.0:8000/api/v1/user/${teacherIdFromState}`,
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
-
-				const data = await response.json();
-				setTeacherName(
-					`${data.first_name} ${data.middle_name} ${data.last_name}`
-				);
-			}
-		} catch (error) {
-			setErrorMessage("Failed to fetch teacher.");
-			console.error("Failed to fetch teacher:", error);
-		}
-	};
-
-	const fetchTeachers = async () => {
-		if (!token) {
-			setErrorMessage("Not authenticated");
-			setIsToastVisible(true);
-			throw new Error("Not authenticated");
-		}
-		try {
-			const response = await fetch(
-				"http://0.0.0.0:8000/api/v1/user?page=1&size=50",
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
-
-			const data = await response.json();
-
-			const filteredTeachers = data.items
-				.filter((user: UserFormState) => user.role === "teacher")
-				.sort(
-					(a: any, b: any) =>
-						new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-				);
-
-			setUsers(filteredTeachers);
-		} catch (error) {
-			setErrorMessage("Failed to fetch teachers.");
-			console.error("Failed to fetch teachers:", error);
-		}
-	};
+	const userId = Number(localStorage.getItem("user_id"));
 
 	const fetchEvaluations = async () => {
 		try {
@@ -102,20 +25,14 @@ export default function TeacherEvaluationListView() {
 				throw new Error("Not authenticated");
 			}
 
-			// http://localhost:8000/api/v1/3/evaluations?page=1&size=50
-
-			const evalUrl =
-				teacherId || teacherIdFromState
-					? `http://localhost:8000/api/v1/${
-							teacherId || teacherIdFromState
-					  }/evaluations?page=1&size=50`
-					: `http://localhost:8000/api/v1/evaluation?page=1&size=50`;
-
-			const response = await fetch(evalUrl, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
+			const response = await fetch(
+				`http://localhost:8000/api/v1/${userId}/evaluations?page=1&size=50`,
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
 
 			if (response.status === 401) {
 				throw new Error("Unauthorized access");
@@ -124,10 +41,18 @@ export default function TeacherEvaluationListView() {
 			const data = await response.json();
 
 			if (Array.isArray(data.items)) {
-				const filteredEvaluations = data.items.sort(
-					(a: any, b: any) =>
-						new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-				);
+				const filteredEvaluations = data.items
+					.filter(
+						(evaluation: any) =>
+							Number(evaluation.teacher_id) === Number(userId)
+					)
+					.sort(
+						(a: any, b: any) =>
+							new Date(b.updated_at).getTime() -
+							new Date(a.updated_at).getTime()
+					);
+
+				console.log(filteredEvaluations);
 
 				setEvaluations(filteredEvaluations);
 			} else {
@@ -150,22 +75,9 @@ export default function TeacherEvaluationListView() {
 
 	useEffect(() => {
 		fetchEvaluations();
-	}, [teacherId]);
+	}, [userId]);
 
-	useEffect(() => {
-		fetchTeachers();
-	}, [teacherId]);
-
-	useEffect(() => {
-		fetchTeacher();
-	}, [teacherIdFromState]);
-
-	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	) => {
-		const { value } = e.target;
-		setTeacherId(Number(value));
-	};
+	console.log(userId);
 
 	return (
 		<div className="overflow-x-auto">
@@ -214,38 +126,6 @@ export default function TeacherEvaluationListView() {
 					</button>
 				</div>
 			)}
-
-			<div
-				id="dropdownInformation"
-				className="mb-3 divide-black-100 rounded-lg w-44"
-			>
-				<label
-					htmlFor="name"
-					className="block mb-2 text-sm font-medium text-gray-900"
-				>
-					Choose teacher to Evaluate
-				</label>
-				<select
-					name="teacherId"
-					className="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
-					onChange={handleChange}
-					value={teacherId || ""}
-					required
-				>
-					<option value="" disabled>
-						{teacherName}
-					</option>
-					{users.map((teacher: any) => (
-						<option key={teacher.id} value={teacher.id}>
-							{teacher.first_name +
-								" " +
-								teacher.middle_name +
-								" " +
-								teacher.last_name}
-						</option>
-					))}
-				</select>
-			</div>
 
 			<table className="min-w-full bg-white">
 				<thead className="bg-red-800 whitespace-nowrap">
@@ -300,7 +180,7 @@ export default function TeacherEvaluationListView() {
 									to={`/teacher/questions`}
 									state={{
 										evaluationId: evaluation.id,
-										teacherId: teacherId,
+										userId: userId,
 									}}
 								>
 									<button className="mr-4" title="click ">
