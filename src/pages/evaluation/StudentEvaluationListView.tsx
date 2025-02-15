@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-	Link,
-	useLocation,
-	useNavigate,
-	useSearchParams,
-} from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 
@@ -16,10 +11,6 @@ interface UserFormState {
 	lastName: string;
 	role: string;
 	admin_id: number;
-}
-
-interface EvaluationState {
-	teacher_id: number;
 }
 
 export default function StudentEvaluationListView() {

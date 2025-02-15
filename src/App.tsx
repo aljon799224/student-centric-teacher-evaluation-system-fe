@@ -22,6 +22,7 @@ import AdminDashboardPage from "./pages/dashboard/AdminDashboardPage";
 import StudentDashboardPage from "./pages/dashboard/StudentDashboardPage";
 import StudentEvaluationListView from "./pages/evaluation/StudentEvaluationListView";
 import StudentEvaluationQAFormView from "./pages/evaluation/StudentEvaluationQAFormView";
+import AdminProfilePage from "./pages/AdminProfilePage";
 
 const router = createBrowserRouter([
 	{
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
 					{
 						path: "reset-password",
 						element: <ForgotPasswordPage />,
+					},
+					{
+						path: "profile",
+						element: <AdminProfilePage />,
 					},
 				],
 			},

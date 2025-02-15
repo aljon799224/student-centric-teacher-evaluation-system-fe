@@ -168,7 +168,7 @@ export default function StudentPage() {
 								<ul className="mt-3 space-y-2">
 									<li>
 										<a
-											href="/admin/reset-password"
+											href="/student/reset-password"
 											className={`text-sm flex items-center rounded-md px-4 py-2 transition-all ${
 												location.pathname === "/admin/reset-password"
 													? "bg-red-800 text-white"
