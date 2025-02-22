@@ -28,6 +28,7 @@ import TeacherEvaluationListView from "./pages/evaluation/TeacherEvaluationListV
 import TeacherEvaluationQAFormView from "./pages/evaluation/TeacherEvaluationQAFormView";
 import TeacherProfilePage from "./pages/TeacherProfilePage";
 import StudentProfilePage from "./pages/StudentProfilePage";
+import TeacherEvaluationDetailedListView from "./pages/evaluation/TeacherEvaluationDetailedListView";
 
 const router = createBrowserRouter([
 	{
@@ -99,6 +100,10 @@ const router = createBrowserRouter([
 					{
 						path: "evaluations",
 						element: <TeacherEvaluationListView />,
+					},
+					{
+						path: "evaluations/:evaluationId",
+						element: <TeacherEvaluationDetailedListView />,
 					},
 					{
 						path: "questions",
