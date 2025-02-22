@@ -127,6 +127,10 @@ const router = createBrowserRouter([
 						element: <StudentEvaluationListView />,
 					},
 					{
+						path: "evaluations/:evaluationId",
+						element: <StudentEvaluationQAFormView />,
+					},
+					{
 						path: "questions",
 						element: <StudentEvaluationQAFormView />,
 					},
