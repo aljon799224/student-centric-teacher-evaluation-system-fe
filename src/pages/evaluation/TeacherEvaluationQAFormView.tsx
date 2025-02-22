@@ -6,6 +6,10 @@ interface QuestionState {
 	evaluation_id: number;
 }
 
+interface QuestionResultState {
+	evaluation_result_id: number;
+}
+
 export default function TeacherEvaluationQAFormView() {
 	const [questions, setQuestions] = useState<any[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -30,7 +34,7 @@ export default function TeacherEvaluationQAFormView() {
 			}
 
 			const response = await fetch(
-				"http://0.0.0.0:8000/api/v1/question?page=1&size=50",
+				"http://0.0.0.0:8000/api/v1/question-result?page=1&size=50",
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -43,6 +47,8 @@ export default function TeacherEvaluationQAFormView() {
 			}
 
 			const data = await response.json();
+
+			console.log(data);
 
 			if (Array.isArray(data.items)) {
 				const filteredQuestions = data.items
@@ -74,8 +80,64 @@ export default function TeacherEvaluationQAFormView() {
 		}
 	};
 
+	const fetchQuestionResults = async () => {
+		try {
+			if (!token) {
+				throw new Error("Not authenticated");
+			}
+
+			const response = await fetch(
+				"http://0.0.0.0:8000/api/v1/question-result?page=1&size=50",
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
+			if (response.status === 401) {
+				throw new Error("Unauthorized access");
+			}
+
+			const data = await response.json();
+
+			if (Array.isArray(data.items)) {
+				const filteredQuestions = data.items
+					.filter(
+						(question: QuestionResultState) =>
+							question.evaluation_result_id === evaluationId
+					)
+					.sort(
+						(a: any, b: any) =>
+							new Date(b.updated_at).getTime() -
+							new Date(a.updated_at).getTime()
+					);
+
+				setQuestions(filteredQuestions);
+			} else {
+				setQuestions([]);
+			}
+		} catch (error: any) {
+			setErrorMessage(error.message);
+			setIsToastVisible(true);
+			if (
+				error.message === "Not authenticated" ||
+				error.message === "Unauthorized access"
+			) {
+				// Redirect to login page if not authenticated
+				navigate("/login");
+			} else {
+				setQuestions([]);
+			}
+		}
+	};
 	useEffect(() => {
-		fetchQuestions();
+		// if (isSubmitted) {
+		// 	fetchQuestionResults();
+		// } else {
+		// 	fetchQuestions();
+		// }
+		fetchQuestionResults();
 	}, [evaluationId]);
 
 	return (

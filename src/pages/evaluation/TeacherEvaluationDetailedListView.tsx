@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 
-export default function TeacherEvaluationListView() {
+export default function TeacherEvaluationDetailedListView() {
 	const [evaluations, setEvaluations] = useState<any[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
+	const location = useLocation();
+
+	const evaluationId = location.state?.evaluationId ?? 0;
 
 	const navigate = useNavigate();
 
@@ -26,7 +29,7 @@ export default function TeacherEvaluationListView() {
 			}
 
 			const response = await fetch(
-				`http://localhost:8000/api/v1/${userId}/evaluations?page=1&size=50`,
+				`http://localhost:8000/api/v1/${evaluationId}/evaluation-result?page=1&size=50`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -148,9 +151,11 @@ export default function TeacherEvaluationListView() {
 				</thead>
 
 				<tbody className="whitespace-nowrap">
-					{evaluations.map((evaluation) => (
+					{evaluations.map((evaluation, index) => (
 						<tr className="even:bg-blue-50" key={evaluation.id}>
-							<td className="p-4 text-sm text-black">{evaluation.title}</td>
+							<td className="p-4 text-sm text-black">
+								{index + 1}. {evaluation.title}
+							</td>
 							<td className="p-4 text-sm text-black">
 								{evaluation.teacher_name}
 							</td>
@@ -173,7 +178,7 @@ export default function TeacherEvaluationListView() {
 							</td> */}
 							<td className="p-4">
 								<Link
-									to={`/teacher/evaluations/${evaluation.id}`}
+									to={`/teacher/questions`}
 									state={{
 										evaluationId: evaluation.id,
 										userId: userId,
