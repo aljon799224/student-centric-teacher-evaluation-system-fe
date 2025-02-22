@@ -95,7 +95,7 @@ export default function StudentEvaluationQAFormView() {
 		try {
 			if (evaluationId) {
 				const response = await fetch(
-					`http://0.0.0.0:8000/api/v1/evaluation/${evaluationId}`,
+					`http://localhost:8000/api/v1/evaluation/${evaluationId}`,
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -121,7 +121,7 @@ export default function StudentEvaluationQAFormView() {
 			}
 
 			const response = await fetch(
-				"http://0.0.0.0:8000/api/v1/question?page=1&size=50",
+				"http://localhost:8000/api/v1/question?page=1&size=50",
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -172,7 +172,7 @@ export default function StudentEvaluationQAFormView() {
 			}
 
 			const response = await fetch(
-				"http://0.0.0.0:8000/api/v1/question-result?page=1&size=50",
+				"http://localhost:8000/api/v1/question-result?page=1&size=50",
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -261,7 +261,7 @@ export default function StudentEvaluationQAFormView() {
 		try {
 			// Step 1: Create Evaluation Result
 			const evaluationResultRes = await axios.post(
-				`http://0.0.0.0:8000/api/v1/evaluation-result`,
+				`http://localhost:8000/api/v1/evaluation-result`,
 				{
 					title: evaluationTitle,
 					teacher_id: teacherId,
@@ -285,7 +285,7 @@ export default function StudentEvaluationQAFormView() {
 				const answer = answers[question.id];
 
 				return axios.post(
-					`http://0.0.0.0:8000/api/v1/question-result`,
+					`http://localhost:8000/api/v1/question-result`,
 					{
 						question_text: question.question_text,
 						evaluation_result_id: evalResultId,

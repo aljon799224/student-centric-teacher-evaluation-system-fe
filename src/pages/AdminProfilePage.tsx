@@ -42,7 +42,7 @@ export default function AdminProfilePage() {
 				}
 
 				const response = await axios.get(
-					`http://0.0.0.0:8000/api/v1/user/${userId}`,
+					`http://localhost:8000/api/v1/user/${userId}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
@@ -115,7 +115,7 @@ export default function AdminProfilePage() {
 			};
 
 			await axios.put(
-				`http://0.0.0.0:8000/api/v1/user/${userId}`,
+				`http://localhost:8000/api/v1/user/${userId}`,
 				backendPayload,
 				{
 					headers: {

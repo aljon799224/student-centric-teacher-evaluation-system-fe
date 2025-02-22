@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
 				new_password: formData.newPassword,
 			};
 			const response = await axios.post(
-				"http://0.0.0.0:8000/api/v1/reset-password",
+				"http://localhost:8000/api/v1/reset-password",
 				payload,
 				{
 					headers: {

@@ -47,7 +47,7 @@ export default function AdminStudentUpdateView({
 				}
 
 				const response = await axios.get(
-					`http://0.0.0.0:8000/api/v1/user/${studentId}`,
+					`http://localhost:8000/api/v1/user/${studentId}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
@@ -120,7 +120,7 @@ export default function AdminStudentUpdateView({
 			};
 
 			const response = await axios.put(
-				`http://0.0.0.0:8000/api/v1/user/${studentId}`,
+				`http://localhost:8000/api/v1/user/${studentId}`,
 				backendPayload,
 				{
 					headers: {

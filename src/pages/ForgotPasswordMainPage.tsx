@@ -57,7 +57,7 @@ export default function ForgotPasswordMainPage() {
 				token: token,
 				new_password: formData.newPassword,
 			};
-			await axios.post("http://0.0.0.0:8000/api/v1/reset-password", payload, {
+			await axios.post("http://localhost:8000/api/v1/reset-password", payload, {
 				headers: {
 					Accept: "application/json",
 					"Content-Type": "application/json",
@@ -69,7 +69,7 @@ export default function ForgotPasswordMainPage() {
 			};
 
 			await axios.put(
-				`http://0.0.0.0:8000/api/v1/user/${userId}`,
+				`http://localhost:8000/api/v1/user/${userId}`,
 				backendPayload,
 				{
 					headers: {

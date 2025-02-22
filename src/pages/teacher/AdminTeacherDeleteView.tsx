@@ -28,7 +28,7 @@ export default function AdminTeacherDeleteView({
 
 			// Send a DELETE request to the API using axios
 			const response = await axios.delete(
-				`http://0.0.0.0:8000/api/v1/user/${teacherId}`,
+				`http://localhost:8000/api/v1/user/${teacherId}`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

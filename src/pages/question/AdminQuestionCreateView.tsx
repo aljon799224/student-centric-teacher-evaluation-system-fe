@@ -55,7 +55,7 @@ export default function AdminQuestionCreateView({
 			};
 
 			const response = await axios.post(
-				"http://0.0.0.0:8000/api/v1/question",
+				"http://localhost:8000/api/v1/question",
 				backendPayload,
 				{
 					headers: {

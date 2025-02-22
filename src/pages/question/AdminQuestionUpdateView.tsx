@@ -41,7 +41,7 @@ export default function AdminQuestionUpdateView({
 				//////////////////////////////////
 
 				const response = await axios.get(
-					`http://0.0.0.0:8000/api/v1/question/${questionId}`,
+					`http://localhost:8000/api/v1/question/${questionId}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
@@ -107,7 +107,7 @@ export default function AdminQuestionUpdateView({
 			};
 
 			const response = await axios.put(
-				`http://0.0.0.0:8000/api/v1/question/${questionId}`,
+				`http://localhost:8000/api/v1/question/${questionId}`,
 				backendPayload,
 				{
 					headers: {

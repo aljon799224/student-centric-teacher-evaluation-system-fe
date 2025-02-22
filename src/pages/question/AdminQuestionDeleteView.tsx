@@ -28,7 +28,7 @@ export default function AdminQuestionDeleteView({
 
 			// Send a DELETE request to the API using axios
 			const response = await axios.delete(
-				`http://0.0.0.0:8000/api/v1/question/${questionId}`,
+				`http://localhost:8000/api/v1/question/${questionId}`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
