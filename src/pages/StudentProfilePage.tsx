@@ -42,7 +42,7 @@ export default function StudentProfilePage() {
 				}
 
 				const response = await axios.get(
-					`http://0.0.0.0:8000/api/v1/user/${userId}`,
+					`http://localhost:8000/api/v1/user/${userId}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
@@ -113,7 +113,7 @@ export default function StudentProfilePage() {
 			};
 
 			await axios.put(
-				`http://0.0.0.0:8000/api/v1/user/${userId}`,
+				`http://localhost:8000/api/v1/user/${userId}`,
 				backendPayload,
 				{
 					headers: {

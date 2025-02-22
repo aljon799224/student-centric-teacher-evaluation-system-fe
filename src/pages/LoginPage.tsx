@@ -47,7 +47,7 @@ export default function LoginPage() {
 
 		try {
 			const response = await axios.post(
-				"http://0.0.0.0:8000/api/v1/auth/login/token",
+				"http://localhost:8000/api/v1/auth/login/token",
 				formData,
 				{
 					headers: {

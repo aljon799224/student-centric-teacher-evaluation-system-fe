@@ -53,7 +53,7 @@ export default function AdminEvaluationUpdateView({
 
 				// fetch teachers for the dropdown
 				const teachers = await fetch(
-					"http://0.0.0.0:8000/api/v1/user?page=1&size=50",
+					"http://localhost:8000/api/v1/user?page=1&size=50",
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -79,7 +79,7 @@ export default function AdminEvaluationUpdateView({
 				//////////////////////////////////
 
 				const response = await axios.get(
-					`http://0.0.0.0:8000/api/v1/evaluation/${evaluationId}`,
+					`http://localhost:8000/api/v1/evaluation/${evaluationId}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
@@ -146,7 +146,7 @@ export default function AdminEvaluationUpdateView({
 			};
 
 			const response = await axios.put(
-				`http://0.0.0.0:8000/api/v1/evaluation/${evaluationId}`,
+				`http://localhost:8000/api/v1/evaluation/${evaluationId}`,
 				backendPayload,
 				{
 					headers: {

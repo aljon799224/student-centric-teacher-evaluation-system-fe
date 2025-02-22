@@ -23,7 +23,7 @@ export default function StudentDashboardPage() {
 			}
 
 			const response = await fetch(
-				"http://0.0.0.0:8000/api/v1/announcement?page=1&size=50",
+				"http://localhost:8000/api/v1/announcement?page=1&size=50",
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

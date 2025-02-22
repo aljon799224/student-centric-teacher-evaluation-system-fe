@@ -45,7 +45,7 @@ export default function StudentEvaluationListView() {
 		try {
 			if (teacherIdFromState) {
 				const response = await fetch(
-					`http://0.0.0.0:8000/api/v1/user/${teacherIdFromState}`,
+					`http://localhost:8000/api/v1/user/${teacherIdFromState}`,
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -72,7 +72,7 @@ export default function StudentEvaluationListView() {
 		}
 		try {
 			const response = await fetch(
-				"http://0.0.0.0:8000/api/v1/user?page=1&size=50",
+				"http://localhost:8000/api/v1/user?page=1&size=50",
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

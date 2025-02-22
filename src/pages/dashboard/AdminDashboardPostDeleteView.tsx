@@ -28,7 +28,7 @@ export default function AdminDashboardPostDeleteView({
 
 			// Send a DELETE request to the API using axios
 			const response = await axios.delete(
-				`http://0.0.0.0:8000/api/v1/announcement/${announcementId}`,
+				`http://localhost:8000/api/v1/announcement/${announcementId}`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

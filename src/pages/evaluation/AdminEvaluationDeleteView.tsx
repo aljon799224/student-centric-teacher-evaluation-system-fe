@@ -28,7 +28,7 @@ export default function AdminEvaluationDeleteView({
 
 			// Send a DELETE request to the API using axios
 			const response = await axios.delete(
-				`http://0.0.0.0:8000/api/v1/evaluation/${evaluationId}`,
+				`http://localhost:8000/api/v1/evaluation/${evaluationId}`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

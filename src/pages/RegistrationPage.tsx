@@ -62,7 +62,7 @@ export default function RegistrationPage() {
 			};
 
 			const response = await axios.post(
-				"http://0.0.0.0:8000/api/v1/user",
+				"http://localhost:8000/api/v1/user",
 				backendPayload
 			);
 
