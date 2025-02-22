@@ -7,14 +7,22 @@ interface QuestionState {
 	evaluation_id: number;
 }
 
+interface QuestionResultState {
+	evaluation_result_id: number;
+}
+
 export default function StudentEvaluationQAFormView() {
 	const [questions, setQuestions] = useState<any[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
 	const [isSubmitted, setIsSubmitted] = useState(false);
+	const [evaluationTitle, setEvaluationTitle] = useState(false);
 	const [answers, setAnswers] = useState<
 		Record<number, { rating: number; comment: string }>
 	>({});
+	const [evaluationResultId, setEvaluationResultId] = useState<number | null>(
+		null
+	);
 
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -28,7 +36,55 @@ export default function StudentEvaluationQAFormView() {
 
 	// Check for authentication token (e.g., in localStorage or cookies)
 	const token = localStorage.getItem("token");
-	const userId = localStorage.getItem("userId");
+	const userId = localStorage.getItem("user_id");
+
+	const fetchEvaluationResults = async () => {
+		try {
+			// Check for authentication token (e.g., in localStorage or cookies)
+			const token = localStorage.getItem("token");
+			if (!token) {
+				throw new Error("Not authenticated");
+			}
+
+			const response = await fetch(
+				`http://localhost:8000/api/v1/${evaluationId}/${userId}/evaluation-result?page=1&size=50`,
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
+			if (response.status === 401) {
+				throw new Error("Unauthorized access");
+			}
+
+			const data = await response.json();
+
+			if (data.items && Array.isArray(data.items) && data.items.length > 0) {
+				const firstItemId = data.items[0].id;
+
+				setEvaluationResultId(firstItemId);
+				setIsSubmitted(true);
+			} else {
+				setIsSubmitted(false);
+			}
+		} catch (error: any) {
+			setErrorMessage(error.message);
+			setIsToastVisible(true);
+			if (
+				error.message === "Not authenticated" ||
+				error.message === "Unauthorized access"
+			) {
+				// Redirect to login page if not authenticated
+				navigate("/login");
+			} else {
+				// setEvaluations([]);
+			}
+		}
+	};
+
+	console.log(teacherId);
 
 	const fetchEvaluation = async () => {
 		if (!token) {
@@ -48,7 +104,9 @@ export default function StudentEvaluationQAFormView() {
 				);
 
 				const data = await response.json();
-				setIsSubmitted(data.is_submitted ? true : false);
+				// setIsSubmitted(data.is_submitted ? true : false);
+
+				setEvaluationTitle(data.title);
 			}
 		} catch (error) {
 			setErrorMessage("Failed to fetch teacher.");
@@ -107,13 +165,73 @@ export default function StudentEvaluationQAFormView() {
 		}
 	};
 
+	const fetchQuestionResults = async () => {
+		try {
+			if (!token) {
+				throw new Error("Not authenticated");
+			}
+
+			const response = await fetch(
+				"http://0.0.0.0:8000/api/v1/question-result?page=1&size=50",
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
+			if (response.status === 401) {
+				throw new Error("Unauthorized access");
+			}
+
+			const data = await response.json();
+
+			if (Array.isArray(data.items)) {
+				const filteredQuestions = data.items
+					.filter(
+						(question: QuestionResultState) =>
+							question.evaluation_result_id === evaluationResultId
+					)
+					.sort(
+						(a: any, b: any) =>
+							new Date(b.updated_at).getTime() -
+							new Date(a.updated_at).getTime()
+					);
+
+				setQuestions(filteredQuestions);
+			} else {
+				setQuestions([]);
+			}
+		} catch (error: any) {
+			setErrorMessage(error.message);
+			setIsToastVisible(true);
+			if (
+				error.message === "Not authenticated" ||
+				error.message === "Unauthorized access"
+			) {
+				// Redirect to login page if not authenticated
+				navigate("/login");
+			} else {
+				setQuestions([]);
+			}
+		}
+	};
+
 	useEffect(() => {
-		fetchQuestions();
-	}, [evaluationId]);
+		if (isSubmitted) {
+			fetchQuestionResults();
+		} else {
+			fetchQuestions();
+		}
+	}, [evaluationId, evaluationResultId]);
 
 	useEffect(() => {
 		fetchEvaluation();
 	}, [evaluationId]);
+
+	useEffect(() => {
+		fetchEvaluationResults();
+	}, []);
 
 	const handleratingChange = (questionId: number, rating: number) => {
 		setAnswers((prev) => ({
@@ -138,26 +256,45 @@ export default function StudentEvaluationQAFormView() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setErrorMessage(""); // Reset error message
 
 		try {
-			// Send API calls for each question
+			// Step 1: Create Evaluation Result
+			const evaluationResultRes = await axios.post(
+				`http://0.0.0.0:8000/api/v1/evaluation-result`,
+				{
+					title: evaluationTitle,
+					teacher_id: teacherId,
+					admin_id: userId,
+					evaluation_id: evaluationId,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
+			const evalResultId = evaluationResultRes.data?.id;
+			if (!evalResultId) {
+				throw new Error("Evaluation result creation failed. No ID received.");
+			}
+
+			// Step 2: Submit Question Results
 			const savePromises = questions.map((question) => {
 				const answer = answers[question.id];
 
-				const backendPayload = {
-					evaluation_id: evaluationId,
-					student_ud: userId,
-					rating: Number(answer?.rating) || 0,
-					comment: answer?.comment || "",
-				};
-
-				return axios.put(
-					`http://0.0.0.0:8000/api/v1/question/${question.id}`,
-					backendPayload,
+				return axios.post(
+					`http://0.0.0.0:8000/api/v1/question-result`,
 					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
+						question_text: question.question_text,
+						evaluation_result_id: evalResultId,
+						student_id: userId,
+						rating: Number(answer?.rating) || 0,
+						comment: answer?.comment || "",
+					},
+					{
+						headers: { Authorization: `Bearer ${token}` },
 					}
 				);
 			});
@@ -165,43 +302,21 @@ export default function StudentEvaluationQAFormView() {
 			// Wait for all API calls to complete
 			const results = await Promise.allSettled(savePromises);
 
-			// Check if all requests were successful
+			// Step 3: Validate Submission Status
 			const allSuccessful = results.every(
 				(res) => res.status === "fulfilled" && res.value.status === 200
 			);
 
-			// Update `is_submitted` based on success
-			try {
-				await axios.put(
-					`http://0.0.0.0:8000/api/v1/evaluation/${evaluationId}`,
-					{ is_submitted: allSuccessful },
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
-			} catch (error: any) {
-				console.error(
-					"Failed to update is_submitted:",
-					error.response?.data || error.message
-				);
-				setErrorMessage("Failed to update evaluation status.");
-			}
-
 			if (allSuccessful) {
 				navigate("/student/evaluations", {
-					state: {
-						message: "All answers submitted successfully!",
-						teacherId: teacherId,
-					},
+					state: { message: "All answers submitted successfully!", teacherId },
 				});
 			} else {
 				setErrorMessage("Some answers failed to submit. Please retry.");
 			}
 		} catch (error: any) {
-			console.error("Unexpected error:", error.response?.data || error.message);
-			setErrorMessage("Something went wrong. Please try again.");
+			console.error("Submission error:", error.response?.data || error.message);
+			setErrorMessage("An error occurred. Please try again.");
 		}
 	};
 

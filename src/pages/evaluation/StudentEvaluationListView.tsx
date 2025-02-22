@@ -262,9 +262,9 @@ export default function StudentEvaluationListView() {
 						<th className="p-4 text-left text-sm font-medium text-white">
 							Updated At
 						</th>
-						<th className="p-4 text-left text-sm font-medium text-white">
+						{/* <th className="p-4 text-left text-sm font-medium text-white">
 							Status
-						</th>
+						</th> */}
 						<th className="p-4 text-left text-sm font-medium text-white">
 							Actions
 						</th>
@@ -284,7 +284,7 @@ export default function StudentEvaluationListView() {
 							<td className="p-4 text-sm text-black">
 								{formattedDate(evaluation.updated_at)}
 							</td>
-							<td className="p-4 text-sm text-black">
+							{/* <td className="p-4 text-sm text-black">
 								{evaluation.is_submitted ? (
 									<span className="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
 										Submitted
@@ -294,10 +294,10 @@ export default function StudentEvaluationListView() {
 										Pending
 									</span>
 								)}
-							</td>
+							</td> */}
 							<td className="p-4">
 								<Link
-									to={`/student/questions`}
+									to={`/student/evaluations/${evaluation.id}`}
 									state={{
 										evaluationId: evaluation.id,
 										teacherId: teacherId,
