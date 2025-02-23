@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import axios from "axios";
+import { da } from "date-fns/locale";
 
 interface QuestionState {
 	evaluation_id: number;
@@ -23,11 +24,12 @@ export default function StudentEvaluationQAFormView() {
 	const [evaluationResultId, setEvaluationResultId] = useState<number | null>(
 		null
 	);
+	const [teacherId1, setTeacherId1] = useState<number | null>(null);
 
 	const location = useLocation();
 	const navigate = useNavigate();
 	const evaluationId = location.state?.evaluationId ?? 0;
-	const teacherId = location.state?.teacherId ?? 0;
+	const teacherId = location.state?.teacherId ?? teacherId1;
 
 	const closeToast = () => setIsToastVisible(false);
 
@@ -84,8 +86,6 @@ export default function StudentEvaluationQAFormView() {
 		}
 	};
 
-	console.log(teacherId);
-
 	const fetchEvaluation = async () => {
 		if (!token) {
 			setErrorMessage("Not authenticated");
@@ -107,6 +107,7 @@ export default function StudentEvaluationQAFormView() {
 				// setIsSubmitted(data.is_submitted ? true : false);
 
 				setEvaluationTitle(data.title);
+				setTeacherId1(data.teacher_id);
 			}
 		} catch (error) {
 			setErrorMessage("Failed to fetch teacher.");
@@ -135,7 +136,7 @@ export default function StudentEvaluationQAFormView() {
 
 			const data = await response.json();
 
-			if (Array.isArray(data.items)) {
+			if (Array.isArray(data.items && !isSubmitted)) {
 				const filteredQuestions = data.items
 					.filter(
 						(question: QuestionState) => question.evaluation_id === evaluationId
@@ -223,7 +224,7 @@ export default function StudentEvaluationQAFormView() {
 		} else {
 			fetchQuestions();
 		}
-	}, [evaluationId, evaluationResultId]);
+	}, [isSubmitted, questions]);
 
 	useEffect(() => {
 		fetchEvaluation();
@@ -319,6 +320,8 @@ export default function StudentEvaluationQAFormView() {
 			setErrorMessage("An error occurred. Please try again.");
 		}
 	};
+
+	console.log(questions);
 
 	return (
 		<div className="overflow-x-auto">
