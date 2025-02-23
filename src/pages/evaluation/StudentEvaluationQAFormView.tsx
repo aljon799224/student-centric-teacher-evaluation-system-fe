@@ -136,7 +136,7 @@ export default function StudentEvaluationQAFormView() {
 
 			const data = await response.json();
 
-			if (Array.isArray(data.items && !isSubmitted)) {
+			if (Array.isArray(data.items)) {
 				const filteredQuestions = data.items
 					.filter(
 						(question: QuestionState) => question.evaluation_id === evaluationId
@@ -219,12 +219,16 @@ export default function StudentEvaluationQAFormView() {
 	};
 
 	useEffect(() => {
-		if (isSubmitted) {
-			fetchQuestionResults();
-		} else {
-			fetchQuestions();
-		}
-	}, [isSubmitted, questions]);
+		const timer = setTimeout(() => {
+			if (isSubmitted) {
+				fetchQuestionResults();
+			} else {
+				fetchQuestions();
+			}
+		}, 300); // Wait 300ms before triggering API calls
+
+		return () => clearTimeout(timer);
+	}, [isSubmitted]);
 
 	useEffect(() => {
 		fetchEvaluation();
@@ -320,8 +324,6 @@ export default function StudentEvaluationQAFormView() {
 			setErrorMessage("An error occurred. Please try again.");
 		}
 	};
-
-	console.log(questions);
 
 	return (
 		<div className="overflow-x-auto">
