@@ -3,6 +3,7 @@ import BarChart from "../charts/BarChart";
 import PieChart from "../charts/PieChart";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
+import usePagination from "../../hooks/usePagination";
 
 export default function TeacherDashboardPage() {
 	const [announcements, setAnnouncements] = useState<any[]>([]);
@@ -68,8 +69,16 @@ export default function TeacherDashboardPage() {
 		fetchAnnouncements();
 	}, []);
 
+	const {
+		currentPage,
+		totalPages,
+		paginatedData,
+		goToNextPage,
+		goToPreviousPage,
+	} = usePagination(announcements, 5, fetchAnnouncements);
+
 	return (
-		<div className="grid grid-rows-3 grid-flow-col gap-4 text-white text-sm text-center font-bold leading-6 ">
+		<div className="grid grid-rows-3 grid-flow-col gap-4 text-sm text-center leading-6 ">
 			<div className="p-4 rounded-lg shadow-lg grid row-span-3 col-span-4">
 				<div className="w-full h-screen p-4 flex flex-col">
 					<div className="flex flex-col capitalize text-3xl">
@@ -82,7 +91,7 @@ export default function TeacherDashboardPage() {
 						<div className="flex flex-col capitalize text-3xl mb-6">
 							<span className="font-semibold text-black">Announcements</span>
 						</div>
-						{announcements.map((announcement) => (
+						{paginatedData.map((announcement) => (
 							<li className="mt-2" key={announcement.id}>
 								<div className="p-5 flex flex-col justify-between bg-gray-100 rounded-lg">
 									<div className="flex justify-between items-center">
@@ -108,6 +117,27 @@ export default function TeacherDashboardPage() {
 								</div>
 							</li>
 						))}
+						<div className="flex items-center justify-center space-x-2 mt-4">
+							<button
+								className="px-3 py-1 border rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+								onClick={goToPreviousPage}
+								disabled={currentPage === 1}
+							>
+								Prev
+							</button>
+
+							<span className="px-4 py-1 border rounded-lg bg-blue-100">
+								Page {currentPage} of {totalPages}
+							</span>
+
+							<button
+								className="px-3 py-1 border rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+								onClick={goToNextPage}
+								disabled={currentPage === totalPages}
+							>
+								Next
+							</button>
+						</div>
 					</ul>
 				</div>
 			</div>

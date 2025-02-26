@@ -5,6 +5,7 @@ import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import AdminTeacherUpdateView from "./AdminTeacherUpdateView";
 import AdminTeacherDeleteView from "./AdminTeacherDeleteView";
+import usePagination from "../../hooks/usePagination";
 
 export default function AdminTeacherListView() {
 	const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
@@ -109,6 +110,14 @@ export default function AdminTeacherListView() {
 			(a, b) =>
 				new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
 		);
+
+	const {
+		currentPage,
+		totalPages,
+		paginatedData,
+		goToNextPage,
+		goToPreviousPage,
+	} = usePagination(filteredTeachers, 10, fetchUsers);
 
 	return (
 		<div className="overflow-x-auto">
@@ -243,7 +252,7 @@ export default function AdminTeacherListView() {
 				</thead>
 
 				<tbody className="whitespace-nowrap">
-					{filteredTeachers.map((user) => (
+					{paginatedData.map((user) => (
 						<tr className="even:bg-blue-50" key={user.username}>
 							<td className="p-4 text-sm text-black">
 								{user.first_name +
@@ -313,6 +322,28 @@ export default function AdminTeacherListView() {
 					))}
 				</tbody>
 			</table>
+
+			<div className="flex items-center justify-center space-x-2 mt-4">
+				<button
+					className="px-3 py-1 border rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+					onClick={goToPreviousPage}
+					disabled={currentPage === 1}
+				>
+					Prev
+				</button>
+
+				<span className="px-4 py-1 border rounded-lg bg-blue-100">
+					Page {currentPage} of {totalPages}
+				</span>
+
+				<button
+					className="px-3 py-1 border rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+					onClick={goToNextPage}
+					disabled={currentPage === totalPages}
+				>
+					Next
+				</button>
+			</div>
 		</div>
 	);
 }
