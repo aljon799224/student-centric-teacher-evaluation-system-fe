@@ -6,7 +6,7 @@ interface QuestionResultState {
 	evaluation_result_id: number;
 }
 
-export default function TeacherEvaluationQAFormView() {
+export default function AdminEvaluationQAFormView() {
 	const [questions, setQuestions] = useState<any[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
