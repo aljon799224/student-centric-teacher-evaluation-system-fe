@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
+import usePagination from "../../hooks/usePagination";
 
 export default function AdminEvaluationResponseListView() {
 	const [evaluations, setEvaluations] = useState<any[]>([]);
@@ -68,6 +69,14 @@ export default function AdminEvaluationResponseListView() {
 	useEffect(() => {
 		fetchEvaluations();
 	}, [userId]);
+
+	const {
+		currentPage,
+		totalPages,
+		paginatedData,
+		goToNextPage,
+		goToPreviousPage,
+	} = usePagination(evaluations, 10, fetchEvaluations);
 
 	return (
 		<div className="overflow-x-auto">
@@ -142,7 +151,7 @@ export default function AdminEvaluationResponseListView() {
 				</thead>
 
 				<tbody className="whitespace-nowrap">
-					{evaluations.map((evaluation) => (
+					{paginatedData.map((evaluation) => (
 						<tr className="even:bg-blue-50" key={evaluation.id}>
 							<td className="p-4 text-sm text-black">{evaluation.title}</td>
 							<td className="p-4 text-sm text-black">
@@ -195,6 +204,27 @@ export default function AdminEvaluationResponseListView() {
 					))}
 				</tbody>
 			</table>
+			<div className="flex items-center justify-center space-x-2 mt-4">
+				<button
+					className="px-3 py-1 border rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+					onClick={goToPreviousPage}
+					disabled={currentPage === 1}
+				>
+					Prev
+				</button>
+
+				<span className="px-4 py-1 border rounded-lg bg-blue-100">
+					Page {currentPage} of {totalPages}
+				</span>
+
+				<button
+					className="px-3 py-1 border rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+					onClick={goToNextPage}
+					disabled={currentPage === totalPages}
+				>
+					Next
+				</button>
+			</div>
 		</div>
 	);
 }
