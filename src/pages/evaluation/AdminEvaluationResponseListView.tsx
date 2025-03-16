@@ -180,6 +180,7 @@ export default function AdminEvaluationResponseListView() {
 									state={{
 										evaluationId: evaluation.id,
 										userId: userId,
+										teacherId: evaluation.teacher_id,
 									}}
 								>
 									<button className="mr-4" title="click ">
