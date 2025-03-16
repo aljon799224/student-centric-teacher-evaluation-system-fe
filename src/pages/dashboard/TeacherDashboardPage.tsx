@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import BarChart from "../charts/BarChart";
-import PieChart from "../charts/PieChart";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import usePagination from "../../hooks/usePagination";
@@ -78,7 +76,7 @@ export default function TeacherDashboardPage() {
 	} = usePagination(announcements, 5, fetchAnnouncements);
 
 	return (
-		<div className="grid grid-rows-3 grid-flow-col gap-4 text-sm text-center leading-6 ">
+		<div className="grid grid-rows-3 grid-flow-col gap-4 text-sm leading-6 ">
 			<div className="p-4 rounded-lg shadow-lg grid row-span-3 col-span-4">
 				<div className="w-full h-screen p-4 flex flex-col">
 					<div className="flex flex-col capitalize text-3xl">
@@ -141,12 +139,12 @@ export default function TeacherDashboardPage() {
 					</ul>
 				</div>
 			</div>
-			<div className="p-4 rounded-lg grid place-content-center ">
+			{/* <div className="p-4 rounded-lg grid place-content-center ">
 				<BarChart />
 			</div>
 			<div className="p-4 rounded-lg shadow-lg grid place-content-center row-span-2">
 				<PieChart />
-			</div>
+			</div> */}
 		</div>
 	);
 }

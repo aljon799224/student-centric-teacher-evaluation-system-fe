@@ -12,6 +12,8 @@ export default function AdminEvaluationResponseDetailedListView() {
 
 	const evaluationId = location.state?.evaluationId ?? 0;
 
+	const teacherId = location.state?.teacherId ?? 0;
+
 	const navigate = useNavigate();
 
 	const closeToast = () => setIsToastVisible(false);
@@ -30,7 +32,7 @@ export default function AdminEvaluationResponseDetailedListView() {
 			}
 
 			const response = await fetch(
-				`http://localhost:8000/api/v1/${evaluationId}/evaluation-result?page=1&size=50`,
+				`http://localhost:8000/api/v1/evaluation-result/teacher/${teacherId}?page=1&size=50`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -144,6 +146,9 @@ export default function AdminEvaluationResponseDetailedListView() {
 							Teacher
 						</th>
 						<th className="p-4 text-left text-sm font-medium text-white">
+							Average
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
 							Created At
 						</th>
 						<th className="p-4 text-left text-sm font-medium text-white">
@@ -166,6 +171,7 @@ export default function AdminEvaluationResponseDetailedListView() {
 							<td className="p-4 text-sm text-black">
 								{evaluation.teacher_name}
 							</td>
+							<td className="p-4 text-sm text-black">{evaluation.average}</td>
 							<td className="p-4 text-sm text-black">
 								{formattedDate(evaluation.created_at)}
 							</td>
