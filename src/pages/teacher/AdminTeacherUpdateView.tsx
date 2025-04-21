@@ -127,11 +127,6 @@ export default function AdminTeacherUpdateView({
 				state: { message: "Teacher has been updated successfully!" },
 			});
 		} catch (error: any) {
-			const errorMsg =
-				error.response?.data?.message ||
-				error.message ||
-				"An error occurred. Please try again.";
-
 			// Display error feedback
 			setErrorMessage(
 				"The username and password must be unique. Please ensure they are not already in use or verify your internet connection and try again."

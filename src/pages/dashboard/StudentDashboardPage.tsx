@@ -15,6 +15,9 @@ export default function StudentDashboardPage() {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
 
+	console.log(errorMessage);
+	console.log(isToastVisible);
+
 	const fetchAnnouncements = async () => {
 		try {
 			// Check for authentication token (e.g., in localStorage or cookies)

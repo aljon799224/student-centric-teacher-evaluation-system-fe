@@ -29,6 +29,9 @@ export default function AdminDashboardPage() {
 	>(null);
 	const navigate = useNavigate();
 
+	console.log(errorMessage);
+	console.log(isToastVisible);
+
 	const toggleModalUpdate = () => {
 		setIsModalUpdateOpen(!isModalUpdateOpen);
 	};

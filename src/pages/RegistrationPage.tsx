@@ -61,7 +61,7 @@ export default function RegistrationPage() {
 				password: formData.password,
 			};
 
-			const response = await api.post("/user", backendPayload);
+			await api.post("/user", backendPayload);
 
 			navigate("/login", { state: { message: "Registration Successful!" } });
 		} catch (error: any) {

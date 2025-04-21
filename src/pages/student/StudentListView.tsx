@@ -14,6 +14,8 @@ export default function StudentListView() {
 	const [isToastVisible, setIsToastVisible] = useState(false);
 	const navigate = useNavigate();
 
+	console.log(selectedUserId);
+
 	const closeToast = () => setIsToastVisible(false);
 
 	// Automatically hide toast after 3 seconds
@@ -77,22 +79,6 @@ export default function StudentListView() {
 	useEffect(() => {
 		fetchUsers();
 	}, []);
-
-	const addUser = (newUser: any) => {
-		setUsers((prevUsers) => [...prevUsers, newUser]);
-	};
-
-	const updateUser = (updatedUser: any) => {
-		setUsers((prevUsers) =>
-			prevUsers.map((user) => (user.id === updatedUser.id ? updatedUser : user))
-		);
-	};
-
-	const deleteUser = (deletedUser: any) => {
-		setUsers((prevUsers) =>
-			prevUsers.filter((user) => user.id !== deletedUser.id)
-		);
-	};
 
 	const filteredStudents = users
 		.filter(

@@ -13,6 +13,8 @@ export default function AdminEvaluationResponseDetailedListView() {
 
 	const evaluationId = location.state?.evaluationId ?? 0;
 
+	console.log(evaluationId);
+
 	const teacherId = location.state?.teacherId ?? 0;
 
 	const navigate = useNavigate();

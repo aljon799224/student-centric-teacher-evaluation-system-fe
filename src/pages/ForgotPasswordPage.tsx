@@ -13,7 +13,6 @@ export default function ForgotPasswordPage() {
 	});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
-	const [tokenValue, setTokenValue] = useState<string | null>(null);
 
 	const [isToastVisible, setIsToastVisible] = useState(false);
 
