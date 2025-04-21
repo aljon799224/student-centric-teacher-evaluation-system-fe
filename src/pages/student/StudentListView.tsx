@@ -5,6 +5,7 @@ import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 // import AdminStudentDeleteView from "./AdminStudentDeleteView";
 // import AdminStudentUpdateView from "./AdminStudentUpdateView";
 // import AdminStudentCreateView from "./AdminStudentCreateView";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function StudentListView() {
 	const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
@@ -44,14 +45,11 @@ export default function StudentListView() {
 				throw new Error("Not authenticated");
 			}
 
-			const response = await fetch(
-				"http://localhost:8000/api/v1/user?page=1&size=50",
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await fetch(`${BASE_URL}/user?page=1&size=50`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			if (response.status === 401) {
 				throw new Error("Unauthorized access");

@@ -6,6 +6,7 @@ import AdminEvaluationCreateView from "./AdminEvaluationCreateView";
 import AdminEvaluationUpdateView from "./AdminEvaluationUpdateView";
 import AdminEvaluationDeleteView from "./AdminEvaluationDeleteView";
 import usePagination from "../../hooks/usePagination";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function AdminEvaluationListView() {
 	const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
@@ -44,14 +45,11 @@ export default function AdminEvaluationListView() {
 				throw new Error("Not authenticated");
 			}
 
-			const response = await fetch(
-				"http://localhost:8000/api/v1/evaluation?page=1&size=50",
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await fetch(`${BASE_URL}/evaluation?page=1&size=50`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			if (response.status === 401) {
 				throw new Error("Unauthorized access");

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 interface QuestionResultState {
 	evaluation_result_id: number;
 }
@@ -30,7 +32,7 @@ export default function AdminEvaluationQAFormView() {
 			}
 
 			const response = await fetch(
-				"http://localhost:8000/api/v1/question-result?page=1&size=50",
+				`${BASE_URL}/question-result?page=1&size=50`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

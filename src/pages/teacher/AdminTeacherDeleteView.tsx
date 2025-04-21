@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import { useNavigate } from "react-router-dom";
+import api from "../../axios";
 
 export default function AdminTeacherDeleteView({
 	toggleModalDelete,
@@ -27,14 +28,11 @@ export default function AdminTeacherDeleteView({
 			}
 
 			// Send a DELETE request to the API using axios
-			const response = await axios.delete(
-				`http://localhost:8000/api/v1/user/${teacherId}`,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await api.delete(`/user/${teacherId}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			deleteUser(response.data);
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useAutoHideToast } from "../hooks/useAutoHideToast";
 import { useNavigate } from "react-router-dom";
+import api from "../axios";
 
 export default function SendOtp() {
 	const [email, setEmail] = useState("");
@@ -16,12 +17,9 @@ export default function SendOtp() {
 	const handleSendOTP = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
-			const response = await axios.post(
-				"http://localhost:8000/api/v1/send-otp",
-				{
-					email,
-				}
-			);
+			const response = await api.post("/send-otp", {
+				email,
+			});
 			setSuccessMessage(response.data.message || "OTP sent to your email.");
 			navigate("/reset-password-main", {
 				state: { email: email, message: "OTP sent to your email" },

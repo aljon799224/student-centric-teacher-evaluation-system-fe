@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../axios";
 
 interface UpdatePostFormState {
 	announcementText: string;
@@ -41,12 +42,9 @@ export default function AdminDashboardPostUpdateView({
 
 				//////////////////////////////////
 
-				const response = await axios.get(
-					`http://localhost:8000/api/v1/announcement/${announcementId}`,
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				);
+				const response = await api.get(`/announcement/${announcementId}`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
 
 				const { announcement_text } = response.data;
 
@@ -108,8 +106,8 @@ export default function AdminDashboardPostUpdateView({
 				admin_id: userId,
 			};
 
-			const response = await axios.put(
-				`http://localhost:8000/api/v1/announcement/${announcementId}`,
+			const response = await api.put(
+				`/announcement/${announcementId}`,
 				backendPayload,
 				{
 					headers: {

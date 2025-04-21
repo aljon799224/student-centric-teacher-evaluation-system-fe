@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import { useNavigate } from "react-router-dom";
+import api from "../../axios";
 
 export default function AdminEvaluationDeleteView({
 	toggleModalDelete,
@@ -27,14 +28,11 @@ export default function AdminEvaluationDeleteView({
 			}
 
 			// Send a DELETE request to the API using axios
-			const response = await axios.delete(
-				`http://localhost:8000/api/v1/evaluation/${evaluationId}`,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await api.delete(`/evaluation/${evaluationId}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			deleteEvaluation(response.data);
 

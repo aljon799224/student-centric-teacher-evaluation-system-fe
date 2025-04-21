@@ -3,6 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import axios from "axios";
 import { da } from "date-fns/locale";
+import api from "../../axios";
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface QuestionState {
 	evaluation_id: number;
@@ -50,7 +53,7 @@ export default function StudentEvaluationQAFormView() {
 			}
 
 			const response = await fetch(
-				`http://localhost:8000/api/v1/${evaluationId}/${userId}/evaluation-result?page=1&size=50`,
+				`${BASE_URL}/${evaluationId}/${userId}/evaluation-result?page=1&size=50`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -95,14 +98,11 @@ export default function StudentEvaluationQAFormView() {
 		}
 		try {
 			if (evaluationId) {
-				const response = await fetch(
-					`http://localhost:8000/api/v1/evaluation/${evaluationId}`,
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
+				const response = await fetch(`${BASE_URL}/evaluation/${evaluationId}`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
 
 				const data = await response.json();
 				// setIsSubmitted(data.is_submitted ? true : false);
@@ -122,14 +122,11 @@ export default function StudentEvaluationQAFormView() {
 				throw new Error("Not authenticated");
 			}
 
-			const response = await fetch(
-				"http://localhost:8000/api/v1/question?page=1&size=50",
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await fetch(`${BASE_URL}/question?page=1&size=50`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			if (response.status === 401) {
 				throw new Error("Unauthorized access");
@@ -174,7 +171,7 @@ export default function StudentEvaluationQAFormView() {
 			}
 
 			const response = await fetch(
-				"http://localhost:8000/api/v1/question-result?page=1&size=50",
+				`${BASE_URL}/question-result?page=1&size=50`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -269,8 +266,8 @@ export default function StudentEvaluationQAFormView() {
 
 		try {
 			// Step 1: Create Evaluation Result
-			const evaluationResultRes = await axios.post(
-				`http://localhost:8000/api/v1/evaluation-result`,
+			const evaluationResultRes = await api.post(
+				`/evaluation-result`,
 				{
 					title: evaluationTitle,
 					teacher_id: teacherId,
@@ -293,8 +290,8 @@ export default function StudentEvaluationQAFormView() {
 			const savePromises = questions.map((question) => {
 				const answer = answers[question.id];
 
-				return axios.post(
-					`http://localhost:8000/api/v1/question-result`,
+				return api.post(
+					`/question-result`,
 					{
 						question_text: question.question_text,
 						evaluation_result_id: evalResultId,

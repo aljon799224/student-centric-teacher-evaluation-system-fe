@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../axios";
 
 interface UpdateQuestionFormState {
 	questionText: string;
@@ -40,12 +41,9 @@ export default function AdminQuestionUpdateView({
 
 				//////////////////////////////////
 
-				const response = await axios.get(
-					`http://localhost:8000/api/v1/question/${questionId}`,
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				);
+				const response = await api.get(`/question/${questionId}`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
 
 				const { question_text } = response.data;
 
@@ -106,8 +104,8 @@ export default function AdminQuestionUpdateView({
 				question_text: formData.questionText,
 			};
 
-			const response = await axios.put(
-				`http://localhost:8000/api/v1/question/${questionId}`,
+			const response = await api.put(
+				`/question/${questionId}`,
 				backendPayload,
 				{
 					headers: {

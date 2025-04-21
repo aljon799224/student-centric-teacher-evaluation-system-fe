@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../axios";
 
 interface UserFormState {
 	username: string;
@@ -41,12 +42,9 @@ export default function TeacherProfilePage() {
 					throw new Error("Not authenticated");
 				}
 
-				const response = await axios.get(
-					`http://localhost:8000/api/v1/user/${userId}`,
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				);
+				const response = await api.get(`/user/${userId}`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
 
 				const { username, email, first_name, middle_name, last_name, role } =
 					response.data;
@@ -112,15 +110,11 @@ export default function TeacherProfilePage() {
 				last_name: formData.lastName,
 			};
 
-			await axios.put(
-				`http://localhost:8000/api/v1/user/${userId}`,
-				backendPayload,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			await api.put(`/user/${userId}`, backendPayload, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			navigate("/teacher/profile", {
 				state: { message: "Teacher profile has been updated successfully!" },

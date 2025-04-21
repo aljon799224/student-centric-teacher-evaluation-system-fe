@@ -2,6 +2,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import usePagination from "../../hooks/usePagination";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function StudentDashboardPage() {
 	const [announcements, setAnnouncements] = useState<any[]>([]);
@@ -23,14 +24,11 @@ export default function StudentDashboardPage() {
 				throw new Error("Not authenticated");
 			}
 
-			const response = await fetch(
-				"http://localhost:8000/api/v1/announcement?page=1&size=50",
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await fetch(`${BASE_URL}/announcement?page=1&size=50`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			if (response.status === 401) {
 				throw new Error("Unauthorized access");

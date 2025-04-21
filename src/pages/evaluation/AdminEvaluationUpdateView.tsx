@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../axios";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface UpdateEvaluationFormState {
 	title: string;
@@ -52,14 +53,11 @@ export default function AdminEvaluationUpdateView({
 				}
 
 				// fetch teachers for the dropdown
-				const teachers = await fetch(
-					"http://localhost:8000/api/v1/user?page=1&size=50",
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
+				const teachers = await fetch(`${BASE_URL}/user?page=1&size=50`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
 				const teachers_data = await teachers.json();
 
 				const filteredTeachers = teachers_data.items
@@ -78,12 +76,9 @@ export default function AdminEvaluationUpdateView({
 
 				//////////////////////////////////
 
-				const response = await axios.get(
-					`http://localhost:8000/api/v1/evaluation/${evaluationId}`,
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				);
+				const response = await api.get(`/evaluation/${evaluationId}`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
 
 				const { title, teacher_id } = response.data;
 				setFormData({
@@ -145,8 +140,8 @@ export default function AdminEvaluationUpdateView({
 				teacher_id: formData.teacher_id,
 			};
 
-			const response = await axios.put(
-				`http://localhost:8000/api/v1/evaluation/${evaluationId}`,
+			const response = await api.put(
+				`/evaluation/${evaluationId}`,
 				backendPayload,
 				{
 					headers: {

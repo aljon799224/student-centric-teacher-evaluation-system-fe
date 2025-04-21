@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
+import api from "../../axios";
 
 interface CreateQuestionFormState {
 	questionText: string;
@@ -54,15 +55,11 @@ export default function AdminQuestionCreateView({
 				evaluation_title: evaluationTitle,
 			};
 
-			const response = await axios.post(
-				"http://localhost:8000/api/v1/question",
-				backendPayload,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await api.post("/question", backendPayload, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			addQuestion(response.data);
 

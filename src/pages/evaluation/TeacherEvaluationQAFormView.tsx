@@ -23,6 +23,8 @@ export default function TeacherEvaluationQAFormView() {
 	// Check for authentication token (e.g., in localStorage or cookies)
 	const token = localStorage.getItem("token");
 
+	const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 	const fetchQuestionResults = async () => {
 		try {
 			if (!token) {
@@ -30,7 +32,7 @@ export default function TeacherEvaluationQAFormView() {
 			}
 
 			const response = await fetch(
-				"http://localhost:8000/api/v1/question-result?page=1&size=50",
+				`${BASE_URL}/question-result?page=1&size=50`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

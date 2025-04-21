@@ -4,6 +4,8 @@ import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import usePagination from "../../hooks/usePagination";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function AdminEvaluationResponseListView() {
 	const [evaluations, setEvaluations] = useState<any[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -26,14 +28,11 @@ export default function AdminEvaluationResponseListView() {
 				throw new Error("Not authenticated");
 			}
 
-			const response = await fetch(
-				`http://localhost:8000/api/v1/evaluation?page=1&size=50`,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await fetch(`${BASE_URL}/evaluation?page=1&size=50`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			if (response.status === 401) {
 				throw new Error("Unauthorized access");

@@ -4,6 +4,8 @@ import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import usePagination from "../../hooks/usePagination";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function TeacherEvaluationListView() {
 	const [evaluations, setEvaluations] = useState<any[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -27,7 +29,7 @@ export default function TeacherEvaluationListView() {
 			}
 
 			const response = await fetch(
-				`http://localhost:8000/api/v1/${userId}/evaluations?page=1&size=50`,
+				`${BASE_URL}/${userId}/evaluations?page=1&size=50`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

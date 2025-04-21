@@ -3,6 +3,7 @@ import aclcLogo from "../assets/aclc.svg";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAutoHideToast } from "../hooks/useAutoHideToast";
+import api from "../axios";
 
 interface LoginFormState {
 	username: string;
@@ -56,15 +57,11 @@ export default function LoginPage() {
 		}
 
 		try {
-			const response = await axios.post(
-				"http://localhost:8000/api/v1/auth/login/token",
-				formData,
-				{
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded",
-					},
-				}
-			);
+			const response = await api.post("/auth/login/token", formData, {
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+			});
 
 			// ✅ Reset attempt count on successful login
 			setAttemptCount(0);

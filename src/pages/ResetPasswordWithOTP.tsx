@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAutoHideToast } from "../hooks/useAutoHideToast";
+import api from "../axios";
 
 interface ResetFormData {
 	email: string;
@@ -34,14 +35,11 @@ export default function ResetPasswordWithOTP() {
 		e.preventDefault();
 
 		try {
-			const response = await axios.post(
-				"http://localhost:8000/api/v1/reset-password-otp",
-				{
-					email: formData.email,
-					otp: formData.otp,
-					new_password: formData.newPassword,
-				}
-			);
+			const response = await api.post("/reset-password-otp", {
+				email: formData.email,
+				otp: formData.otp,
+				new_password: formData.newPassword,
+			});
 
 			setSuccessMessage(response.data.message || "Password reset successful!");
 			setIsToastVisible(true);

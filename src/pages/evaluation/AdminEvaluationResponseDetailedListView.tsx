@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import usePagination from "../../hooks/usePagination";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function AdminEvaluationResponseDetailedListView() {
 	const [evaluations, setEvaluations] = useState<any[]>([]);
@@ -32,7 +33,7 @@ export default function AdminEvaluationResponseDetailedListView() {
 			}
 
 			const response = await fetch(
-				`http://localhost:8000/api/v1/evaluation-result/teacher/${teacherId}?page=1&size=50`,
+				`${BASE_URL}/evaluation-result/teacher/${teacherId}?page=1&size=50`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

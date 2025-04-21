@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
+import api from "../../axios";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface CreateEvaluationFormState {
 	title: string;
@@ -48,14 +50,11 @@ export default function AdminEvaluationCreateView({
 				throw new Error("Not authenticated");
 			}
 			try {
-				const response = await fetch(
-					"http://localhost:8000/api/v1/user?page=1&size=50",
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
+				const response = await fetch(`${BASE_URL}/user?page=1&size=50`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
 				const data = await response.json();
 
 				const filteredTeachers = data.items
@@ -112,15 +111,11 @@ export default function AdminEvaluationCreateView({
 				admin_id: localStorage.getItem("user_id"),
 			};
 
-			const response = await axios.post(
-				"http://localhost:8000/api/v1/evaluation",
-				backendPayload,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await api.post("/evaluation", backendPayload, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			addEvaluation(response.data);
 

@@ -4,6 +4,8 @@ import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import usePagination from "../../hooks/usePagination";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 interface UserFormState {
 	username: string;
 	email: string;
@@ -45,14 +47,11 @@ export default function StudentEvaluationListView() {
 		}
 		try {
 			if (teacherIdFromState) {
-				const response = await fetch(
-					`http://localhost:8000/api/v1/user/${teacherIdFromState}`,
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
+				const response = await fetch(`${BASE_URL}/user/${teacherIdFromState}`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
 
 				const data = await response.json();
 				setTeacherName(
@@ -72,14 +71,11 @@ export default function StudentEvaluationListView() {
 			throw new Error("Not authenticated");
 		}
 		try {
-			const response = await fetch(
-				"http://localhost:8000/api/v1/user?page=1&size=50",
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await fetch(`${BASE_URL}/user?page=1&size=50`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			const data = await response.json();
 
@@ -103,14 +99,12 @@ export default function StudentEvaluationListView() {
 				throw new Error("Not authenticated");
 			}
 
-			// http://localhost:8000/api/v1/3/evaluations?page=1&size=50
-
 			const evalUrl =
 				teacherId || teacherIdFromState
-					? `http://localhost:8000/api/v1/${
+					? `${BASE_URL}/${
 							teacherId || teacherIdFromState
 					  }/evaluations?page=1&size=50`
-					: `http://localhost:8000/api/v1/evaluation?page=1&size=50`;
+					: `${BASE_URL}/evaluation?page=1&size=50`;
 
 			const response = await fetch(evalUrl, {
 				headers: {

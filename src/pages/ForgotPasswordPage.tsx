@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAutoHideToast } from "../hooks/useAutoHideToast";
+import api from "../axios";
 
 interface ForgotPasswordFormState {
 	newPassword: string;
@@ -46,16 +47,12 @@ export default function ForgotPasswordPage() {
 				token: token,
 				new_password: formData.newPassword,
 			};
-			const response = await axios.post(
-				"http://localhost:8000/api/v1/reset-password",
-				payload,
-				{
-					headers: {
-						Accept: "application/json",
-						"Content-Type": "application/json",
-					},
-				}
-			);
+			const response = await api.post("/reset-password", payload, {
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+			});
 			console.error(response);
 			navigate("/login", { state: { message: "Update Password Successful!" } });
 		} catch (error: any) {

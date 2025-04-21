@@ -6,6 +6,8 @@ import AdminQuestionCreateView from "./AdminQuestionCreateView";
 import AdminQuestionUpdateView from "./AdminQuestionUpdateView";
 import AdminQuestionDeleteView from "./AdminQuestionDeleteView";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function AdminQuestionListView() {
 	const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
 	const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
@@ -52,14 +54,11 @@ export default function AdminQuestionListView() {
 				throw new Error("Not authenticated");
 			}
 
-			const response = await fetch(
-				"http://localhost:8000/api/v1/question?page=1&size=50",
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await fetch(`${BASE_URL}/question?page=1&size=50`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			if (response.status === 401) {
 				throw new Error("Unauthorized access");

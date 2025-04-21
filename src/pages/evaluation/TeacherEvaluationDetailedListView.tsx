@@ -19,6 +19,8 @@ export default function TeacherEvaluationDetailedListView() {
 	// Automatically hide toast after 3 seconds
 	useAutoHideToast(isToastVisible, setIsToastVisible);
 
+	const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 	// Check for authentication token (e.g., in localStorage or cookies)
 	const token = localStorage.getItem("token");
 	const userId = Number(localStorage.getItem("user_id"));
@@ -30,7 +32,7 @@ export default function TeacherEvaluationDetailedListView() {
 			}
 
 			const response = await fetch(
-				`http://localhost:8000/api/v1/${evaluationId}/evaluation-result?page=1&size=50`,
+				`${BASE_URL}/${evaluationId}/evaluation-result?page=1&size=50`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

@@ -3,6 +3,7 @@ import generatePassword from "../../utils/generatePassword";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
+import api from "../../axios";
 
 interface CreateTeacherFormState {
 	username: string;
@@ -71,10 +72,7 @@ export default function AdminTeacherCreateView({
 				admin_id: localStorage.getItem("user_id"),
 			};
 
-			const response = await axios.post(
-				"http://localhost:8000/api/v1/user",
-				backendPayload
-			);
+			const response = await api.post("/user", backendPayload);
 
 			addUser(response.data);
 

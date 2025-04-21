@@ -3,6 +3,7 @@ import aclcLogo from "../assets/aclc.svg";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAutoHideToast } from "../hooks/useAutoHideToast";
+import api from "../axios";
 
 interface SignUpFormState {
 	username: string;
@@ -61,10 +62,7 @@ export default function RegistrationPage() {
 				password: formData.password,
 			};
 
-			const response = await axios.post(
-				"http://localhost:8000/api/v1/user",
-				backendPayload
-			);
+			const response = await api.post("/user", backendPayload);
 
 			navigate("/login", { state: { message: "Registration Successful!" } });
 		} catch (error: any) {

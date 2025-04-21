@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import AdminDashboardPostUpdateView from "./AdminDashboardPostUpdateView";
 import AdminDashboardPostDeleteView from "./AdminDashboardPostDeleteView";
 import usePagination from "../../hooks/usePagination";
+import api from "../../axios";
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface AnnouncementFormState {
 	announcementText: string;
@@ -44,14 +47,11 @@ export default function AdminDashboardPage() {
 				throw new Error("Not authenticated");
 			}
 
-			const response = await fetch(
-				"http://localhost:8000/api/v1/announcement?page=1&size=50",
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await fetch(`${BASE_URL}/announcement?page=1&size=50`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			if (response.status === 401) {
 				throw new Error("Unauthorized access");
@@ -134,15 +134,11 @@ export default function AdminDashboardPage() {
 				admin_id: userId,
 			};
 
-			const response = await axios.post(
-				"http://localhost:8000/api/v1/announcement",
-				backendPayload,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await api.post("/announcement", backendPayload, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			const newAnnouncement = response.data;
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../axios";
 
 interface UpdateStudentFormState {
 	username: string;
@@ -46,12 +47,9 @@ export default function AdminStudentUpdateView({
 					throw new Error("Not authenticated");
 				}
 
-				const response = await axios.get(
-					`http://localhost:8000/api/v1/user/${studentId}`,
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				);
+				const response = await api.get(`/user/${studentId}`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
 
 				const { username, email, first_name, middle_name, last_name } =
 					response.data;
@@ -119,15 +117,11 @@ export default function AdminStudentUpdateView({
 				last_name: formData.lastName,
 			};
 
-			const response = await axios.put(
-				`http://localhost:8000/api/v1/user/${studentId}`,
-				backendPayload,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
+			const response = await api.put(`/user/${studentId}`, backendPayload, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			updateUser(response.data);
 
