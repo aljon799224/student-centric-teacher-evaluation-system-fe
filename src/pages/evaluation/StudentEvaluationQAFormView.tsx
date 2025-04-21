@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
-import axios from "axios";
-import { da } from "date-fns/locale";
 import api from "../../axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;

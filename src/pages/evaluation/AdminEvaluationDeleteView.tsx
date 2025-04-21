@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState } from "react";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import { useNavigate } from "react-router-dom";
