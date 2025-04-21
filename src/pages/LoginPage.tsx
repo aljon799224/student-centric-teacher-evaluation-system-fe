@@ -19,6 +19,10 @@ export default function LoginPage() {
 
 	const [isToastVisible, setIsToastVisible] = useState(false);
 
+	const [attemptCount, setAttemptCount] = useState(0);
+	const [isLocked, setIsLocked] = useState(false);
+	const [lockoutTimer, setLockoutTimer] = useState(30);
+
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -45,6 +49,12 @@ export default function LoginPage() {
 	const handleLogin = async (e: React.FormEvent) => {
 		e.preventDefault();
 
+		if (isLocked) {
+			setErrorMessage(`Too many attempts. Please wait ${lockoutTimer}s.`);
+			setIsToastVisible(true);
+			return;
+		}
+
 		try {
 			const response = await axios.post(
 				"http://localhost:8000/api/v1/auth/login/token",
@@ -55,7 +65,13 @@ export default function LoginPage() {
 					},
 				}
 			);
+
+			// ✅ Reset attempt count on successful login
+			setAttemptCount(0);
+
 			const token = response.data.access_token;
+
+			// same navigation logic here...
 			if (response.data.temp_pwd) {
 				navigate("/reset-password", {
 					state: { message: "Please reset your password!" },
@@ -80,9 +96,32 @@ export default function LoginPage() {
 				navigate("/student", { state: { message: "Login Successful!" } });
 			}
 		} catch (error) {
+			const newAttemptCount = attemptCount + 1;
+			setAttemptCount(newAttemptCount);
 			setSuccessMessage("");
 			setErrorMessage("Invalid username or password.");
 			setIsToastVisible(true);
+
+			// 🚨 Lock after 3 attempts
+			if (newAttemptCount >= 3) {
+				setIsLocked(true);
+				setErrorMessage("Too many failed attempts. Please wait 30 seconds.");
+				setIsToastVisible(true);
+
+				let countdown = 30;
+				setLockoutTimer(countdown);
+
+				const interval = setInterval(() => {
+					countdown -= 1;
+					setLockoutTimer(countdown);
+
+					if (countdown <= 0) {
+						clearInterval(interval);
+						setIsLocked(false);
+						setAttemptCount(0);
+					}
+				}, 1000);
+			}
 		}
 	};
 
@@ -229,9 +268,14 @@ export default function LoginPage() {
 					<div className="!mt-12">
 						<button
 							type="submit"
-							className="w-full py-3 px-4 text-sm tracking-wider font-semibold rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none"
+							disabled={isLocked}
+							className={`w-full py-3 px-4 text-sm tracking-wider font-semibold rounded-md text-white ${
+								isLocked
+									? "bg-gray-400 cursor-not-allowed"
+									: "bg-red-600 hover:bg-red-700"
+							}`}
 						>
-							Log In
+							{isLocked ? `Wait ${lockoutTimer}s` : "Log In"}
 						</button>
 					</div>
 					<p className="text-gray-800 text-sm mt-6 text-center">
@@ -241,6 +285,14 @@ export default function LoginPage() {
 							className="text-blue-600 font-semibold hover:underline ml-1"
 						>
 							Create new account
+						</a>
+					</p>
+					<p className="text-gray-800 text-sm mt-6 text-center">
+						<a
+							href="/send-otp"
+							className="text-blue-600 font-semibold hover:underline ml-1"
+						>
+							Forgot Password
 						</a>
 					</p>
 				</form>
