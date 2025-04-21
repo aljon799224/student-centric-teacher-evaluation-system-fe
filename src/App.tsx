@@ -32,6 +32,8 @@ import TeacherEvaluationDetailedListView from "./pages/evaluation/TeacherEvaluat
 import AdminEvaluationResponseListView from "./pages/evaluation/AdminEvaluationResponseListView";
 import AdminEvaluationResponseDetailedListView from "./pages/evaluation/AdminEvaluationResponseDetailedListView";
 import AdminEvaluationQAFormView from "./pages/evaluation/AdminEvaluationQAFormView";
+import SendOtp from "./pages/SendOtp";
+import ResetPasswordWithOTP from "./pages/ResetPasswordWithOTP";
 
 const router = createBrowserRouter([
 	{
@@ -53,6 +55,14 @@ const router = createBrowserRouter([
 	{
 		path: "/reset-password",
 		element: <ForgotPasswordMainPage />,
+	},
+	{
+		path: "/reset-password-main",
+		element: <ResetPasswordWithOTP />,
+	},
+	{
+		path: "/send-otp",
+		element: <SendOtp />,
 	},
 	{
 		path: "/",
