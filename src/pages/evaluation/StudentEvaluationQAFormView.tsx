@@ -215,18 +215,16 @@ export default function StudentEvaluationQAFormView() {
 	};
 
 	useEffect(() => {
-		const timer = setTimeout(() => {
+		const fetchData = async () => {
 			if (isSubmitted) {
-				fetchQuestionResults();
+				await fetchQuestionResults();
 			} else {
-				fetchQuestions();
+				await fetchQuestions();
 			}
-		}, 1); // Wait 300ms before triggering API calls
-
-		return () => {
-			clearTimeout(timer);
-			setIsLoading(false);
+			setIsLoading(false); // ✅ Only set loading false when the fetch is complete
 		};
+
+		fetchData();
 	}, [isSubmitted]);
 
 	useEffect(() => {
