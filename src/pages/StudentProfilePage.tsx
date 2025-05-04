@@ -184,7 +184,7 @@ export default function StudentProfilePage() {
 								Profile
 							</h1>
 							<form onSubmit={handleSubmit}>
-								<div className="w-full rounded-sm bg-[#BF1E2E] bg-cover bg-center bg-no-repeat items-center">
+								<div className="w-full rounded-sm bg-[#0054a6] bg-cover bg-center bg-no-repeat items-center">
 									<div className="mx-auto flex justify-center w-[141px] h-[141px] bg-blue-300/20 rounded-full bg-[url(https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg)] bg-cover bg-center bg-no-repeat">
 										<div className="bg-white/90 rounded-full w-6 h-6 text-center ml-28 mt-4">
 											<input

@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+[class*="bg-red"] {
+	background-color: #0054a6 !important;
+}
+
+[class*="text-red"] {
+	color: #0054a6 !important;
+}

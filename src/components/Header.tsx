@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import aclcLogo from "../assets/aclc.svg";
+import aclcLogo from "../assets/new-logo.jpg";
 
 export default function Header() {
 	const navigate = useNavigate();
@@ -14,10 +14,10 @@ export default function Header() {
 
 	return (
 		<div>
-			<header className="flex shadow-md py-1 px-4 sm:px-7 bg-white min-h-[70px] tracking-wide z-[110] fixed top-0 w-full">
+			<header className="flex shadow-md px-4 sm:px-7 bg-white min-h-[70px] tracking-wide z-[110] fixed top-0 w-full">
 				<div className="flex flex-wrap items-center justify-between gap-4 w-full relative">
-					<a href="javascript:void(0)">
-						<img src={aclcLogo} alt="logo" className="w-36" />
+					<a href="/admin">
+						<img src={aclcLogo} alt="logo" className="w-20 h-auto block p-2" />
 					</a>
 
 					<div

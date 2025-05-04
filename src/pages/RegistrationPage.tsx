@@ -1,5 +1,5 @@
 import { useState } from "react";
-import aclcLogo from "../assets/aclc.svg";
+import aclcLogo from "../assets/new-logo.jpg";
 import { useNavigate } from "react-router-dom";
 import { useAutoHideToast } from "../hooks/useAutoHideToast";
 import api from "../axios";
