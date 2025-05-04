@@ -124,7 +124,6 @@ export default function AdminEvaluationResponseListView() {
 					</button>
 				</div>
 			)}
-
 			<table className="min-w-full bg-white">
 				<thead className="bg-red-800 whitespace-nowrap">
 					<tr>

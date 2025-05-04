@@ -9,6 +9,7 @@ export default function AdminEvaluationResponseDetailedListView() {
 	const [evaluations, setEvaluations] = useState<any[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
+	const [totalAverage, setTotalAverage] = useState<number>(0);
 	const location = useLocation();
 
 	const evaluationId = location.state?.evaluationId ?? 0;
@@ -58,6 +59,14 @@ export default function AdminEvaluationResponseDetailedListView() {
 				);
 
 				setEvaluations(filteredEvaluations);
+
+				// Calculate the total average
+				const sum = filteredEvaluations.reduce(
+					(total: any, curr: any) => total + Number(curr.average),
+					0
+				);
+				const avg = sum / filteredEvaluations.length || 0;
+				setTotalAverage(avg);
 			} else {
 				setEvaluations([]);
 			}
@@ -222,6 +231,11 @@ export default function AdminEvaluationResponseDetailedListView() {
 						</tr>
 					))}
 				</tbody>
+				<div className="text-center my-4">
+					<h2 className="text-lg font-bold text-gray-700">
+						Total Average: {totalAverage.toFixed(2)}
+					</h2>
+				</div>
 			</table>
 			<div className="flex items-center justify-center space-x-2 mt-4">
 				<button
