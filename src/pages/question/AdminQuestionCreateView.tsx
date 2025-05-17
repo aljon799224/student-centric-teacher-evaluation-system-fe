@@ -5,6 +5,7 @@ import api from "../../axios";
 
 interface CreateQuestionFormState {
 	questionText: string;
+	category: string;
 }
 
 export default function AdminQuestionCreateView({
@@ -25,6 +26,7 @@ export default function AdminQuestionCreateView({
 
 	const [formData, setFormData] = useState<CreateQuestionFormState>({
 		questionText: "",
+		category: "", // default empty or you can set a default value
 	});
 
 	const token = localStorage.getItem("token");
@@ -50,6 +52,7 @@ export default function AdminQuestionCreateView({
 			}
 			const backendPayload = {
 				question_text: formData.questionText,
+				category: formData.category,
 				evaluation_id: evaluationId,
 				evaluation_title: evaluationTitle,
 			};
@@ -178,6 +181,31 @@ export default function AdminQuestionCreateView({
 									required
 									maxLength={200}
 								/>
+							</div>
+							<div>
+								<label
+									htmlFor="category"
+									className="block mb-2 text-sm font-medium text-gray-900"
+								>
+									Category
+								</label>
+								<select
+									name="category"
+									className="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
+									onChange={handleChange}
+									value={formData.category}
+									required
+								>
+									<option value="">Select category</option>
+									<option value="Personal & Professional Characteristics">
+										Personal & Professional Characteristics
+									</option>
+									<option value="Classroom Teaching">Classroom Teaching</option>
+									<option value="Classroom Management and Control">
+										Classroom Management and Control
+									</option>
+									<option value="Lesson Plans">Lesson Plans</option>
+								</select>
 							</div>
 
 							{/* <div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import usePagination from "../../hooks/usePagination";
@@ -9,7 +9,7 @@ export default function AdminEvaluationResponseDetailedListView() {
 	const [evaluations, setEvaluations] = useState<any[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
-	const [totalAverage, setTotalAverage] = useState<number>(0);
+	// const [totalAverage, setTotalAverage] = useState<number>(0);
 	const location = useLocation();
 
 	const evaluationId = location.state?.evaluationId ?? 0;
@@ -28,6 +28,14 @@ export default function AdminEvaluationResponseDetailedListView() {
 	// Check for authentication token (e.g., in localStorage or cookies)
 	const token = localStorage.getItem("token");
 	const userId = Number(localStorage.getItem("user_id"));
+
+	const [averages, setAverages] = useState({
+		average_1: 0,
+		average_2: 0,
+		average_3: 0,
+		average_4: 0,
+		average: 0,
+	});
 
 	const fetchEvaluations = async () => {
 		try {
@@ -53,22 +61,55 @@ export default function AdminEvaluationResponseDetailedListView() {
 			console.log(data);
 
 			if (Array.isArray(data.items)) {
-				const filteredEvaluations = data.items.sort(
-					(a: any, b: any) =>
-						new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-				);
+				const filteredEvaluations = data.items
+					.filter((item: any) => item.evaluation_id === evaluationId)
+					.sort(
+						(a: any, b: any) =>
+							new Date(b.updated_at).getTime() -
+							new Date(a.updated_at).getTime()
+					);
 
 				setEvaluations(filteredEvaluations);
 
-				// Calculate the total average
-				const sum = filteredEvaluations.reduce(
-					(total: any, curr: any) => total + Number(curr.average),
+				const count = filteredEvaluations.length || 1;
+
+				const sumAvg1 = filteredEvaluations.reduce(
+					(acc: any, cur: any) => acc + Number(cur.average_1),
 					0
 				);
-				const avg = sum / filteredEvaluations.length || 0;
-				setTotalAverage(avg);
+				const sumAvg2 = filteredEvaluations.reduce(
+					(acc: any, cur: any) => acc + Number(cur.average_2),
+					0
+				);
+				const sumAvg3 = filteredEvaluations.reduce(
+					(acc: any, cur: any) => acc + Number(cur.average_3),
+					0
+				);
+				const sumAvg4 = filteredEvaluations.reduce(
+					(acc: any, cur: any) => acc + Number(cur.average_4),
+					0
+				);
+				const sumAvg = filteredEvaluations.reduce(
+					(acc: any, cur: any) => acc + Number(cur.average),
+					0
+				);
+
+				setAverages({
+					average_1: sumAvg1 / count,
+					average_2: sumAvg2 / count,
+					average_3: sumAvg3 / count,
+					average_4: sumAvg4 / count,
+					average: sumAvg / count,
+				});
 			} else {
 				setEvaluations([]);
+				setAverages({
+					average_1: 0,
+					average_2: 0,
+					average_3: 0,
+					average_4: 0,
+					average: 0,
+				});
 			}
 		} catch (error: any) {
 			setErrorMessage(error.message);
@@ -84,6 +125,8 @@ export default function AdminEvaluationResponseDetailedListView() {
 			}
 		}
 	};
+
+	console.log(evaluations);
 
 	useEffect(() => {
 		fetchEvaluations();
@@ -144,7 +187,6 @@ export default function AdminEvaluationResponseDetailedListView() {
 					</button>
 				</div>
 			)}
-
 			<table className="min-w-full bg-white">
 				<thead className="bg-red-800 whitespace-nowrap">
 					<tr>
@@ -158,7 +200,22 @@ export default function AdminEvaluationResponseDetailedListView() {
 							Teacher
 						</th>
 						<th className="p-4 text-left text-sm font-medium text-white">
+							Average (Personal & Professional Characteristics)
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
+							Average (Classroom Teaching)
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
+							Average (Classroom Management and Control)
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
+							Average (Lesson Plans)
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
 							Average
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
+							Comment
 						</th>
 						<th className="p-4 text-left text-sm font-medium text-white">
 							Created At
@@ -167,9 +224,9 @@ export default function AdminEvaluationResponseDetailedListView() {
 							Updated At
 						</th>
 
-						<th className="p-4 text-left text-sm font-medium text-white">
+						{/* <th className="p-4 text-left text-sm font-medium text-white">
 							Actions
-						</th>
+						</th> */}
 					</tr>
 				</thead>
 
@@ -183,7 +240,12 @@ export default function AdminEvaluationResponseDetailedListView() {
 							<td className="p-4 text-sm text-black">
 								{evaluation.teacher_name}
 							</td>
+							<td className="p-4 text-sm text-black">{evaluation.average_1}</td>
+							<td className="p-4 text-sm text-black">{evaluation.average_2}</td>
+							<td className="p-4 text-sm text-black">{evaluation.average_3}</td>
+							<td className="p-4 text-sm text-black">{evaluation.average_4}</td>
 							<td className="p-4 text-sm text-black">{evaluation.average}</td>
+							<td className="p-4 text-sm text-black">{evaluation.comment}</td>
 							<td className="p-4 text-sm text-black">
 								{formattedDate(evaluation.created_at)}
 							</td>
@@ -202,7 +264,7 @@ export default function AdminEvaluationResponseDetailedListView() {
 									</span>
 								)}
 							</td> */}
-							<td className="p-4">
+							{/* <td className="p-4">
 								<Link
 									to={`/admin/evaluation-responses/questions`}
 									state={{
@@ -227,15 +289,47 @@ export default function AdminEvaluationResponseDetailedListView() {
 										</svg>
 									</button>
 								</Link>
-							</td>
+							</td> */}
 						</tr>
 					))}
+					<tfoot>
+						<tr className="bg-yellow-200 font-bold text-black">
+							<td colSpan={3} className="p-4">
+								<div>Total Averages:</div>
+							</td>
+							<td className="p-4">
+								<div className="text-xs text-gray-700">
+									Personal & Professional Characteristics
+								</div>
+								<div>{averages.average_1.toFixed(2)}</div>
+							</td>
+							<td className="p-4">
+								<div className="text-xs text-gray-700">Classroom Teaching</div>
+								<div>{averages.average_2.toFixed(2)}</div>
+							</td>
+							<td className="p-4">
+								<div className="text-xs text-gray-700">
+									Classroom Management & Control
+								</div>
+								<div>{averages.average_3.toFixed(2)}</div>
+							</td>
+							<td className="p-4">
+								<div className="text-xs text-gray-700">Lesson Plans</div>
+								<div>{averages.average_4.toFixed(2)}</div>
+							</td>
+							<td className="p-4">
+								<div className="text-xs text-gray-700">Overall Average</div>
+								<div>{averages.average.toFixed(2)}</div>
+							</td>
+							<td colSpan={4}></td>
+						</tr>
+					</tfoot>
 				</tbody>
-				<div className="text-center my-4">
+				{/* <div className="text-center my-4">
 					<h2 className="text-lg font-bold text-gray-700">
 						Total Average: {totalAverage.toFixed(2)}
 					</h2>
-				</div>
+				</div> */}
 			</table>
 			<div className="flex items-center justify-center space-x-2 mt-4">
 				<button

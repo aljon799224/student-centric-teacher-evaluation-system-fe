@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import AdminEvaluationCreateView from "./AdminEvaluationCreateView";
 import AdminEvaluationUpdateView from "./AdminEvaluationUpdateView";
 import AdminEvaluationDeleteView from "./AdminEvaluationDeleteView";
 import usePagination from "../../hooks/usePagination";
+import api from "../../axios";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function AdminEvaluationListView() {
@@ -18,7 +19,48 @@ export default function AdminEvaluationListView() {
 		string | null
 	>(null);
 	const [isToastVisible, setIsToastVisible] = useState(false);
+	const [enabledStates, setEnabledStates] = useState<Record<number, boolean>>(
+		{}
+	);
 	const navigate = useNavigate();
+
+	const token = localStorage.getItem("token");
+
+	const toggleEnabled = async (id: any) => {
+		const currentStatus = enabledStates[id];
+		const newStatus = !currentStatus; // toggled value
+
+		// Optimistically update UI
+		setEnabledStates((prev) => ({
+			...prev,
+			[id]: newStatus,
+		}));
+
+		try {
+			// Since `enabled` means "is_enabled", backend expects is_disabled:
+			// If enabled=true => is_disabled=false, if enabled=false => is_disabled=true
+			await api.put(
+				`/evaluation/${id}`,
+				{ is_disabled: !newStatus }, // <-- use !newStatus here
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+		} catch (error: any) {
+			console.error("Toggle failed", error);
+
+			// Revert UI if error
+			setEnabledStates((prev) => ({
+				...prev,
+				[id]: currentStatus,
+			}));
+
+			setErrorMessage(error.message);
+			setIsToastVisible(true);
+		}
+	};
 
 	const closeToast = () => setIsToastVisible(false);
 
@@ -40,7 +82,7 @@ export default function AdminEvaluationListView() {
 	const fetchEvaluations = async () => {
 		try {
 			// Check for authentication token (e.g., in localStorage or cookies)
-			const token = localStorage.getItem("token");
+
 			if (!token) {
 				throw new Error("Not authenticated");
 			}
@@ -59,6 +101,11 @@ export default function AdminEvaluationListView() {
 
 			if (Array.isArray(data.items)) {
 				setEvaluations(data.items);
+				const enabledMap: Record<number, boolean> = {};
+				data.items.forEach((evaluation: any) => {
+					enabledMap[evaluation.id] = !evaluation.is_disabled;
+				});
+				setEnabledStates(enabledMap);
 			} else {
 				setEvaluations([]);
 			}
@@ -117,7 +164,7 @@ export default function AdminEvaluationListView() {
 		paginatedData,
 		goToNextPage,
 		goToPreviousPage,
-	} = usePagination(filteredEvaluations, 3, fetchEvaluations);
+	} = usePagination(filteredEvaluations, 10, fetchEvaluations);
 
 	return (
 		<div className="overflow-x-auto">
@@ -246,92 +293,64 @@ export default function AdminEvaluationListView() {
 				</thead>
 
 				<tbody className="whitespace-nowrap">
-					{paginatedData.map((evaluation) => (
-						<tr className="even:bg-blue-50" key={evaluation.id}>
-							<td className="p-4 text-sm text-black">{evaluation.title}</td>
-							<td className="p-4 text-sm text-black">
-								{evaluation.teacher_name}
-							</td>
-							<td className="p-4 text-sm text-black">
-								{formattedDate(evaluation.created_at)}
-							</td>
-							<td className="p-4 text-sm text-black">
-								{formattedDate(evaluation.updated_at)}
-							</td>
-							<td className="p-4">
-								<Link
-									to={`/admin/questions`}
-									state={{
-										evaluationId: evaluation.id,
-										evaluationTitle: evaluation.title,
-									}}
-								>
-									<button className="mr-4" title="click ">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											fill="none"
-											viewBox="0 0 24 24"
-											strokeWidth="1.5"
-											stroke="currentColor"
-											className="size-6"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672Zm-7.518-.267A8.25 8.25 0 1 1 20.25 10.5M8.288 14.212A5.25 5.25 0 1 1 17.25 10.5"
-											/>
-										</svg>
+					{paginatedData.map((evaluation) => {
+						const enabled =
+							enabledStates[evaluation.id] ?? !evaluation.is_disabled;
+
+						return (
+							<tr className="even:bg-blue-50" key={evaluation.id}>
+								<td className="p-4 text-sm text-black">{evaluation.title}</td>
+								<td className="p-4 text-sm text-black">
+									{evaluation.teacher_name}
+								</td>
+								<td className="p-4 text-sm text-black">
+									{formattedDate(evaluation.created_at)}
+								</td>
+								<td className="p-4 text-sm text-black">
+									{formattedDate(evaluation.updated_at)}
+								</td>
+								<td className="p-4">
+									{/* Your buttons and toggle here */}
+									<button
+										className="mr-4"
+										title="Edit"
+										onClick={() => {
+											setSelectedEvaluationId(evaluation.id);
+											toggleModalUpdate();
+										}}
+									>
+										{/* SVG Edit icon */}
 									</button>
-								</Link>
-								<button
-									className="mr-4"
-									title="Edit "
-									onClick={() => {
-										setSelectedEvaluationId(evaluation.id);
-										toggleModalUpdate();
-									}}
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										className="w-5 fill-blue-500 hover:fill-blue-700"
-										viewBox="0 0 348.882 348.882"
+									<button
+										className="mr-4"
+										title="Delete"
+										onClick={() => {
+											setSelectedEvaluationId(evaluation.id);
+											toggleModalDelete();
+										}}
 									>
-										<path
-											d="m333.988 11.758-.42-.383A43.363 43.363 0 0 0 304.258 0a43.579 43.579 0 0 0-32.104 14.153L116.803 184.231a14.993 14.993 0 0 0-3.154 5.37l-18.267 54.762c-2.112 6.331-1.052 13.333 2.835 18.729 3.918 5.438 10.23 8.685 16.886 8.685h.001c2.879 0 5.693-.592 8.362-1.76l52.89-23.138a14.985 14.985 0 0 0 5.063-3.626L336.771 73.176c16.166-17.697 14.919-45.247-2.783-61.418zM130.381 234.247l10.719-32.134.904-.99 20.316 18.556-.904.99-31.035 13.578zm184.24-181.304L182.553 197.53l-20.316-18.556L294.305 34.386c2.583-2.828 6.118-4.386 9.954-4.386 3.365 0 6.588 1.252 9.082 3.53l.419.383c5.484 5.009 5.87 13.546.861 19.03z"
-											data-original="#000000"
-										/>
-										<path
-											d="M303.85 138.388c-8.284 0-15 6.716-15 15v127.347c0 21.034-17.113 38.147-38.147 38.147H68.904c-21.035 0-38.147-17.113-38.147-38.147V100.413c0-21.034 17.113-38.147 38.147-38.147h131.587c8.284 0 15-6.716 15-15s-6.716-15-15-15H68.904C31.327 32.266.757 62.837.757 100.413v180.321c0 37.576 30.571 68.147 68.147 68.147h181.798c37.576 0 68.147-30.571 68.147-68.147V153.388c.001-8.284-6.715-15-14.999-15z"
-											data-original="#000000"
-										/>
-									</svg>
-								</button>
-								<button
-									className="mr-4"
-									title="Delete"
-									onClick={() => {
-										setSelectedEvaluationId(evaluation.id);
-										toggleModalDelete();
-									}}
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										className="w-5 fill-red-500 hover:fill-red-700"
-										viewBox="0 0 24 24"
+										{/* SVG Delete icon */}
+									</button>
+									<button
+										type="button"
+										role="switch"
+										aria-checked={enabled}
+										onClick={() => toggleEnabled(evaluation.id)}
+										className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 focus:outline-none ${
+											enabled ? "bg-gray-300" : "bg-blue-600"
+										}`}
+										title={enabled ? "Disabled" : "Enabled"}
 									>
-										<path
-											d="M19 7a1 1 0 0 0-1 1v11.191A1.92 1.92 0 0 1 15.99 21H8.01A1.92 1.92 0 0 1 6 19.191V8a1 1 0 0 0-2 0v11.191A3.918 3.918 0 0 0 8.01 23h7.98A3.918 3.918 0 0 0 20 19.191V8a1 1 0 0 0-1-1Zm1-3h-4V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2ZM10 4V3h4v1Z"
-											data-original="#000000"
+										<span
+											className={`inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition-transform duration-300 ${
+												enabled ? "translate-x-1" : "translate-x-6"
+											}`}
 										/>
-										<path
-											d="M11 17v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Zm4 0v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Z"
-											data-original="#000000"
-										/>
-									</svg>
-								</button>
-							</td>
-						</tr>
-					))}
+									</button>
+								</td>
+							</tr>
+						);
+					})}
 				</tbody>
 			</table>
 			<div className="flex items-center justify-center space-x-2 mt-4">

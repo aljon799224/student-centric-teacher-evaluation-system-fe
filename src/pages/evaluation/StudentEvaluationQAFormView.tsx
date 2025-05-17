@@ -7,6 +7,10 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface QuestionState {
 	evaluation_id: number;
+	category: string;
+	question_text: string;
+	id: number;
+	rating: number;
 }
 
 interface QuestionResultState {
@@ -21,17 +25,19 @@ export default function StudentEvaluationQAFormView() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [evaluationTitle, setEvaluationTitle] = useState(false);
 	const [answers, setAnswers] = useState<
-		Record<number, { rating: number; comment: string }>
+		Record<number, { rating: number; category: string }>
 	>({});
 	const [evaluationResultId, setEvaluationResultId] = useState<number | null>(
 		null
 	);
 	const [teacherId1, setTeacherId1] = useState<number | null>(null);
+	const [comment, setComment] = useState("");
 
 	const location = useLocation();
 	const navigate = useNavigate();
 	const evaluationId = location.state?.evaluationId ?? 0;
 	const teacherId = location.state?.teacherId ?? teacherId1;
+	// const category = location.state?.category ?? "";
 
 	const closeToast = () => setIsToastVisible(false);
 
@@ -64,12 +70,12 @@ export default function StudentEvaluationQAFormView() {
 			}
 
 			const data = await response.json();
-
+			console.log(data);
 			if (data.items && Array.isArray(data.items) && data.items.length > 0) {
 				const firstItemId = data.items[0].id;
 
 				setEvaluationResultId(firstItemId);
-				setIsSubmitted(true);
+				setIsSubmitted(data.items[0].is_submitted);
 			} else {
 				setIsSubmitted(false);
 			}
@@ -133,17 +139,16 @@ export default function StudentEvaluationQAFormView() {
 			const data = await response.json();
 
 			if (Array.isArray(data.items)) {
-				const filteredQuestions = data.items
-					.filter(
-						(question: QuestionState) => question.evaluation_id === evaluationId
-					)
-					.sort(
-						(a: any, b: any) =>
-							new Date(b.updated_at).getTime() -
-							new Date(a.updated_at).getTime()
-					);
+				const sortedQuestions = data.items.sort((a: any, b: any) => {
+					const categoryCompare = a.category.localeCompare(b.category);
+					if (categoryCompare !== 0) return categoryCompare;
 
-				setQuestions(filteredQuestions);
+					return (
+						new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+					);
+				});
+
+				setQuestions(sortedQuestions);
 			} else {
 				setQuestions([]);
 			}
@@ -216,8 +221,9 @@ export default function StudentEvaluationQAFormView() {
 
 	useEffect(() => {
 		const fetchData = async () => {
-			if (isSubmitted) {
-				await fetchQuestionResults();
+			console.log(isSubmitted);
+			if (evaluationResultId || isSubmitted) {
+				fetchQuestionResults();
 			} else {
 				await fetchQuestions();
 			}
@@ -246,15 +252,15 @@ export default function StudentEvaluationQAFormView() {
 	};
 
 	// Handle changes to the comment field
-	const handleCommentChange = (questionId: number, comment: string) => {
-		setAnswers((prev) => ({
-			...prev,
-			[questionId]: {
-				...prev[questionId],
-				comment, // Update the comment for the specific question
-			},
-		}));
-	};
+	// const handleCommentChange = (questionId: number, comment: string) => {
+	// 	setAnswers((prev) => ({
+	// 		...prev,
+	// 		[questionId]: {
+	// 			...prev[questionId],
+	// 			comment, // Update the comment for the specific question
+	// 		},
+	// 	}));
+	// };
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -269,6 +275,8 @@ export default function StudentEvaluationQAFormView() {
 					teacher_id: teacherId,
 					admin_id: userId,
 					evaluation_id: evaluationId,
+					is_submitted: true,
+					comment: comment,
 				},
 				{
 					headers: {
@@ -276,6 +284,19 @@ export default function StudentEvaluationQAFormView() {
 					},
 				}
 			);
+			await api.put(
+				`/evaluation/${evaluationId}`,
+				{
+					is_submitted: true,
+					comment: comment,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+			setIsSubmitted(true);
 
 			const evalResultId = evaluationResultRes.data?.id;
 			if (!evalResultId) {
@@ -293,7 +314,7 @@ export default function StudentEvaluationQAFormView() {
 						evaluation_result_id: evalResultId,
 						student_id: userId,
 						rating: Number(answer?.rating) || 0,
-						comment: answer?.comment || "",
+						category: question?.category || "",
 					},
 					{
 						headers: { Authorization: `Bearer ${token}` },
@@ -321,6 +342,17 @@ export default function StudentEvaluationQAFormView() {
 			setErrorMessage("An error occurred. Please try again.");
 		}
 	};
+
+	const groupedByCategory = questions.reduce(
+		(acc: Record<string, QuestionState[]>, question) => {
+			if (!acc[question.category]) {
+				acc[question.category] = [];
+			}
+			acc[question.category].push(question);
+			return acc;
+		},
+		{}
+	);
 
 	return (
 		<div className="overflow-x-auto">
@@ -369,7 +401,6 @@ export default function StudentEvaluationQAFormView() {
 					</button>
 				</div>
 			)}
-
 			<div
 				className={`relative items-center ${
 					isLoading ? "backdrop-blur-md pointer-events-none" : ""
@@ -381,118 +412,123 @@ export default function StudentEvaluationQAFormView() {
 							Rate the Teacher (1: Poor → 5: Excellent)
 						</label>
 						<div>
-							<form method="POST" onSubmit={handleSubmit}>
-								{questions.map((question, index) => (
-									<div key={question.id}>
-										<label className="block mb-2">
-											<span className="text-gray-700">
-												{index + 1}. {question.question_text}
-											</span>
-										</label>
-										<div className="mb-6">
-											<div className="mt-2">
-												<div>
-													{[1, 2, 3, 4, 5].map((value) => (
-														<label
-															key={`${question.id}-${value}`}
-															className="inline-flex items-center mr-4"
-														>
-															<input
-																disabled={isSubmitted}
-																type="radio"
-																name={`question-${question.id}`} // Unique name for each question
-																value={value}
-																className="text-indigo-600 border-gray-300 rounded-full shadow-sm 
-														focus:border-indigo-300 focus:ring focus:ring-offset-0 
-														focus:ring-indigo-200 focus:ring-opacity-50"
-																checked={
-																	(answers[question.id]?.rating ??
-																		question.rating) === value
-																}
-																onChange={() =>
-																	handleratingChange(question.id, value)
-																} // Update state
-																required
-															/>
-															<span className="ml-2">
-																{value === 1 && "Poor"}
-																{value === 2 && "Fair"}
-																{value === 3 && "Good"}
-																{value === 4 && "Very Good"}
-																{value === 5 && "Excellent"}
-															</span>
+							{isSubmitted ? (
+								<div className="text-center mt-10">
+									<h2 className="text-2xl font-semibold text-green-600">
+										Evaluation Submitted
+									</h2>
+									<p className="text-gray-600 mt-2">
+										Thank you for completing the evaluation.
+									</p>
+								</div>
+							) : (
+								<form method="POST" onSubmit={handleSubmit}>
+									{Object.entries(groupedByCategory).map(
+										([category, categoryQuestions]) => (
+											<div key={category} className="mb-8">
+												<h2 className="text-xl font-semibold text-indigo-700 mb-4">
+													{category}
+												</h2>
+
+												{categoryQuestions.map((question, index) => (
+													<div key={question.id} className="mb-6">
+														<label className="block mb-2 text-gray-700 font-bold">
+															{index + 1}. {question.question_text}
 														</label>
-													))}
-												</div>
+
+														<div className="mt-2 mb-4">
+															{[1, 2, 3, 4, 5].map((value) => (
+																<label
+																	key={`${question.id}-${value}`}
+																	className="inline-flex items-center mr-4"
+																>
+																	<input
+																		disabled={isSubmitted}
+																		type="radio"
+																		name={`question-${question.id}`}
+																		value={value}
+																		className="text-indigo-600 border-gray-300 rounded-full shadow-sm 
+										focus:border-indigo-300 focus:ring focus:ring-offset-0 
+										focus:ring-indigo-200 focus:ring-opacity-50"
+																		checked={
+																			(answers[question.id]?.rating ??
+																				question.rating) === value
+																		}
+																		onChange={() =>
+																			handleratingChange(question.id, value)
+																		}
+																		required
+																	/>
+																	<span className="ml-2">
+																		{value === 1 && "Poor"}
+																		{value === 2 && "Fair"}
+																		{value === 3 && "Good"}
+																		{value === 4 && "Very Good"}
+																		{value === 5 && "Excellent"}
+																	</span>
+																</label>
+															))}
+														</div>
+													</div>
+												))}
 											</div>
-										</div>
+										)
+									)}
 
-										<label htmlFor={`${question.id}`}>
-											Additional Comments for the Teacher
-										</label>
-										<div className="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200">
-											<textarea
-												id={`comment-${question.id}`}
-												disabled={isSubmitted}
-												rows={4}
-												className={`px-0 w-full text-sm ${
-													isSubmitted ? "text-gray-400" : "text-gray-800"
-												} border-0 focus:ring-0 focus:outline-none`}
-												placeholder="Write a comment..."
-												value={
-													answers[question.id]?.comment ||
-													question.comment ||
-													""
-												} // Pre-fill the comment field if it exists
-												onChange={(e) =>
-													handleCommentChange(question.id, e.target.value)
-												} // Update the comment
-											></textarea>
-										</div>
-									</div>
-								))}
-
-								<div className="mb-6">
-									<button
-										disabled={isSubmitted}
-										type="submit"
-										className="
-									h-10 px-5 rounded-lg transition-colors duration-150
-									text-indigo-100 bg-indigo-700 
-									hover:bg-indigo-800 focus:shadow-outline
-
-									disabled:bg-gray-400 disabled:text-gray-200 
-									disabled:cursor-not-allowed disabled:opacity-50
-								"
-									>
-										Send Answers
-									</button>
-									{isSubmitted ? (
-										<div
-											className="flex items-center p-4 text-sm text-gray-800 rounded-lg bg-gray-5"
-											role="alert"
+									<div className="mb-4">
+										<label
+											htmlFor="comment"
+											className="block text-sm font-medium text-gray-700"
 										>
-											<svg
-												className="shrink-0 inline w-4 h-4 me-3"
-												aria-hidden="true"
-												xmlns="http://www.w3.org/2000/svg"
-												fill="currentColor"
-												viewBox="0 0 20 20"
+											Additional Comment (Optional)
+										</label>
+										<textarea
+											id="comment"
+											name="comment"
+											rows={4}
+											value={comment}
+											onChange={(e) => setComment(e.target.value)}
+											className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+											placeholder="Write your comment here..."
+										/>
+									</div>
+
+									{/* Submit Button and Submission Alert */}
+									<div className="mb-6">
+										<button
+											disabled={isSubmitted}
+											type="submit"
+											className="h-10 px-5 rounded-lg transition-colors duration-150
+				text-indigo-100 bg-indigo-700 
+				hover:bg-indigo-800 focus:shadow-outline
+				disabled:bg-gray-400 disabled:text-gray-200 
+				disabled:cursor-not-allowed disabled:opacity-50"
+										>
+											Send Answers
+										</button>
+
+										{isSubmitted && (
+											<div
+												className="flex items-center p-4 text-sm text-gray-800 rounded-lg bg-gray-50 mt-4"
+												role="alert"
 											>
-												<path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-											</svg>
-											<span className="sr-only">Info</span>
-											<div>
+												<svg
+													className="shrink-0 inline w-4 h-4 mr-3"
+													aria-hidden="true"
+													xmlns="http://www.w3.org/2000/svg"
+													fill="currentColor"
+													viewBox="0 0 20 20"
+												>
+													<path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+												</svg>
 												<span className="font-medium">
 													This evaluation has already been submitted!
-												</span>{" "}
+												</span>
 											</div>
-										</div>
-									) : (
-										""
-									)}
-								</div>
-							</form>
+										)}
+									</div>
+								</form>
+							)}
 						</div>
 					</div>
 				</div>

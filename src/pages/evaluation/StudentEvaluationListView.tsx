@@ -217,7 +217,6 @@ export default function StudentEvaluationListView() {
 					</button>
 				</div>
 			)}
-
 			<div
 				id="dropdownInformation"
 				className="mb-3 divide-black-100 rounded-lg w-44"
@@ -249,7 +248,6 @@ export default function StudentEvaluationListView() {
 					))}
 				</select>
 			</div>
-
 			<table className="min-w-full bg-white">
 				<thead className="bg-red-800 whitespace-nowrap">
 					<tr>
@@ -298,31 +296,44 @@ export default function StudentEvaluationListView() {
 									</span>
 								)}
 							</td> */}
-							<td className="p-4">
-								<Link
-									to={`/student/evaluations/${evaluation.id}`}
-									state={{
-										evaluationId: evaluation.id,
-										teacherId: teacherId,
-									}}
-								>
-									<button className="mr-4" title="click ">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											fill="none"
-											viewBox="0 0 24 24"
-											strokeWidth="1.5"
-											stroke="currentColor"
-											className="size-6"
+							<td className="">
+								{evaluation.is_disabled ? (
+									<div
+										className="h-full w-full text-gray-400 cursor-not-allowed"
+										title="This evaluation is currently disabled"
+									>
+										<span className="ml-2 text-sm">Disabled</span>
+									</div>
+								) : (
+									<Link
+										to={`/student/evaluations/${evaluation.id}`}
+										state={{
+											evaluationId: evaluation.id,
+											teacherId: teacherId,
+											category: evaluation.category,
+										}}
+									>
+										<button
+											className="flex items-center justify-center text-blue-600 hover:text-blue-800"
+											title="Click to evaluate"
 										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672Zm-7.518-.267A8.25 8.25 0 1 1 20.25 10.5M8.288 14.212A5.25 5.25 0 1 1 17.25 10.5"
-											/>
-										</svg>
-									</button>
-								</Link>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												fill="none"
+												viewBox="0 0 24 24"
+												strokeWidth="1.5"
+												stroke="currentColor"
+												className="size-6"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672Zm-7.518-.267A8.25 8.25 0 1 1 20.25 10.5M8.288 14.212A5.25 5.25 0 1 1 17.25 10.5"
+												/>
+											</svg>
+										</button>
+									</Link>
+								)}
 							</td>
 						</tr>
 					))}
