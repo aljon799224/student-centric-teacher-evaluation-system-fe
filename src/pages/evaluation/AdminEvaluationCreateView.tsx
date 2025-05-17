@@ -225,21 +225,44 @@ export default function AdminEvaluationCreateView({
 						<div className="grid gap-4 mb-4 sm:grid-cols-2">
 							<div>
 								<label
-									htmlFor="name"
+									htmlFor="title"
 									className="block mb-2 text-sm font-medium text-gray-900"
 								>
 									Title
 								</label>
-								<input
+								<select
 									name="title"
-									type="text"
 									className="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
-									placeholder="Enter title"
 									onChange={handleChange}
 									value={formData.title}
 									required
-									maxLength={200}
-								/>
+								>
+									<option value="">Select title</option>
+									<option value="First Semester 2025">
+										First Semester 2025
+									</option>
+									<option value="Second Semester 2025">
+										Second Semester 2025
+									</option>
+									<option value="First Semester 2026">
+										First Semester 2026
+									</option>
+									<option value="Second Semester 2026">
+										Second Semester 2026
+									</option>
+									<option value="First Semester 2027">
+										First Semester 2027
+									</option>
+									<option value="Second Semester 2027">
+										Second Semester 2027
+									</option>
+									<option value="First Semester 2028">
+										First Semester 2028
+									</option>
+									<option value="Second Semester 2028">
+										Second Semester 2028
+									</option>
+								</select>
 							</div>
 							<div>
 								{/* <label className="block mb-2 text-sm font-medium text-gray-900">

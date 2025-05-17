@@ -25,6 +25,14 @@ export default function TeacherEvaluationDetailedListView() {
 	const token = localStorage.getItem("token");
 	const userId = Number(localStorage.getItem("user_id"));
 
+	const [averages, setAverages] = useState({
+		average_1: 0,
+		average_2: 0,
+		average_3: 0,
+		average_4: 0,
+		average: 0,
+	});
+
 	const fetchEvaluations = async () => {
 		try {
 			if (!token) {
@@ -32,7 +40,7 @@ export default function TeacherEvaluationDetailedListView() {
 			}
 
 			const response = await fetch(
-				`${BASE_URL}/${evaluationId}/evaluation-result?page=1&size=50`,
+				`${BASE_URL}/evaluation-result/teacher/${userId}?page=1&size=50`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -50,7 +58,8 @@ export default function TeacherEvaluationDetailedListView() {
 				const filteredEvaluations = data.items
 					.filter(
 						(evaluation: any) =>
-							Number(evaluation.teacher_id) === Number(userId)
+							Number(evaluation.teacher_id) === Number(userId) &&
+							evaluation.evaluation_id === evaluationId
 					)
 					.sort(
 						(a: any, b: any) =>
@@ -59,6 +68,37 @@ export default function TeacherEvaluationDetailedListView() {
 					);
 
 				setEvaluations(filteredEvaluations);
+
+				const count = filteredEvaluations.length || 1;
+
+				const sumAvg1 = filteredEvaluations.reduce(
+					(acc: any, cur: any) => acc + Number(cur.average_1),
+					0
+				);
+				const sumAvg2 = filteredEvaluations.reduce(
+					(acc: any, cur: any) => acc + Number(cur.average_2),
+					0
+				);
+				const sumAvg3 = filteredEvaluations.reduce(
+					(acc: any, cur: any) => acc + Number(cur.average_3),
+					0
+				);
+				const sumAvg4 = filteredEvaluations.reduce(
+					(acc: any, cur: any) => acc + Number(cur.average_4),
+					0
+				);
+				const sumAvg = filteredEvaluations.reduce(
+					(acc: any, cur: any) => acc + Number(cur.average),
+					0
+				);
+
+				setAverages({
+					average_1: sumAvg1 / count,
+					average_2: sumAvg2 / count,
+					average_3: sumAvg3 / count,
+					average_4: sumAvg4 / count,
+					average: sumAvg / count,
+				});
 			} else {
 				setEvaluations([]);
 			}
@@ -88,7 +128,7 @@ export default function TeacherEvaluationDetailedListView() {
 		goToNextPage,
 		goToPreviousPage,
 	} = usePagination(evaluations, 10, fetchEvaluations);
-
+	console.log(evaluations);
 	return (
 		<div className="overflow-x-auto">
 			{isToastVisible && errorMessage && (
@@ -147,6 +187,24 @@ export default function TeacherEvaluationDetailedListView() {
 							Teacher
 						</th>
 						<th className="p-4 text-left text-sm font-medium text-white">
+							Average (Personal & Professional Characteristics)
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
+							Average (Classroom Teaching)
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
+							Average (Classroom Management and Control)
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
+							Average (Lesson Plans)
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
+							Average
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
+							Comment
+						</th>
+						<th className="p-4 text-left text-sm font-medium text-white">
 							Created At
 						</th>
 						<th className="p-4 text-left text-sm font-medium text-white">
@@ -170,6 +228,12 @@ export default function TeacherEvaluationDetailedListView() {
 							<td className="p-4 text-sm text-black">
 								{evaluation.teacher_name}
 							</td>
+							<td className="p-4 text-sm text-black">{evaluation.average_1}</td>
+							<td className="p-4 text-sm text-black">{evaluation.average_2}</td>
+							<td className="p-4 text-sm text-black">{evaluation.average_3}</td>
+							<td className="p-4 text-sm text-black">{evaluation.average_4}</td>
+							<td className="p-4 text-sm text-black">{evaluation.average}</td>
+							<td className="p-4 text-sm text-black">{evaluation.comment}</td>
 							<td className="p-4 text-sm text-black">
 								{formattedDate(evaluation.created_at)}
 							</td>
@@ -215,6 +279,38 @@ export default function TeacherEvaluationDetailedListView() {
 							</td>
 						</tr>
 					))}
+					<tfoot>
+						<tr className="bg-yellow-200 font-bold text-black">
+							<td colSpan={3} className="p-4">
+								<div>Total Averages:</div>
+							</td>
+							<td className="p-4">
+								<div className="text-xs text-gray-700">
+									Personal & Professional Characteristics
+								</div>
+								<div>{averages.average_1.toFixed(2)}</div>
+							</td>
+							<td className="p-4">
+								<div className="text-xs text-gray-700">Classroom Teaching</div>
+								<div>{averages.average_2.toFixed(2)}</div>
+							</td>
+							<td className="p-4">
+								<div className="text-xs text-gray-700">
+									Classroom Management & Control
+								</div>
+								<div>{averages.average_3.toFixed(2)}</div>
+							</td>
+							<td className="p-4">
+								<div className="text-xs text-gray-700">Lesson Plans</div>
+								<div>{averages.average_4.toFixed(2)}</div>
+							</td>
+							<td className="p-4">
+								<div className="text-xs text-gray-700">Overall Average</div>
+								<div>{averages.average.toFixed(2)}</div>
+							</td>
+							<td colSpan={4}></td>
+						</tr>
+					</tfoot>
 				</tbody>
 			</table>
 			<div className="flex items-center justify-center space-x-2 mt-4">

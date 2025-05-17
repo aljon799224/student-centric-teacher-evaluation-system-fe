@@ -127,7 +127,6 @@ export default function TeacherEvaluationQAFormView() {
 					</button>
 				</div>
 			)}
-
 			<div className="w-1/2 mx-auto">
 				<div className="p-6 border border-gray-300 sm:rounded-md">
 					<label htmlFor="rating" className="block mb-6">

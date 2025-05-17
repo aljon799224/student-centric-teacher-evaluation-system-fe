@@ -110,14 +110,12 @@ export default function AdminQuestionListView() {
 		);
 	};
 
-	const filteredQuestions = questions
-		.filter(
-			(question) => question.evaluation_id === Number(selectedEvaluationId)
-		)
-		.sort(
-			(a, b) =>
-				new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-		);
+	const filteredQuestions = questions.sort((a, b) => {
+		const categoryCompare = a.category.localeCompare(b.category);
+		if (categoryCompare !== 0) return categoryCompare;
+
+		return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+	});
 
 	return (
 		<div className="overflow-x-auto">
@@ -235,7 +233,7 @@ export default function AdminQuestionListView() {
 							Question
 						</th>
 						<th className="p-4 text-left text-sm font-medium text-white">
-							Evaluation Title
+							Category
 						</th>
 						<th className="p-4 text-left text-sm font-medium text-white">
 							Created At
@@ -255,9 +253,7 @@ export default function AdminQuestionListView() {
 							<td className="p-4 text-sm text-black">
 								{question.question_text}
 							</td>
-							<td className="p-4 text-sm text-black">
-								{question.evaluation_title}
-							</td>
+							<td className="p-4 text-sm text-black">{question.category}</td>
 							<td className="p-4 text-sm text-black">
 								{formattedDate(question.created_at)}
 							</td>
