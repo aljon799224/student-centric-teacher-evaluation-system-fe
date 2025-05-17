@@ -43,7 +43,6 @@ export default function AdminDashboardPage() {
 	const fetchAnnouncements = async () => {
 		try {
 			// Check for authentication token (e.g., in localStorage or cookies)
-
 			if (!token) {
 				navigate("/login");
 				throw new Error("Not authenticated");

@@ -9,3 +9,8 @@
 [class*="text-red"] {
 	color: #0054a6 !important;
 }
+
+#error-icon {
+	background-color: red !important;
+	color: white !important;
+}
