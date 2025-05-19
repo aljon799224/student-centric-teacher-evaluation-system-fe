@@ -179,6 +179,7 @@ export default function AdminEvaluationResponseListView() {
 										evaluationId: evaluation.id,
 										userId: userId,
 										teacherId: evaluation.teacher_id,
+										teacherName: evaluation.teacher_name,
 									}}
 								>
 									<button className="mr-4" title="click ">

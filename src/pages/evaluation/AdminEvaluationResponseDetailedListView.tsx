@@ -4,6 +4,7 @@ import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import usePagination from "../../hooks/usePagination";
 import ChartModal from "../../components/ChartModal";
+import jsPDF from "jspdf";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function AdminEvaluationResponseDetailedListView() {
@@ -18,6 +19,7 @@ export default function AdminEvaluationResponseDetailedListView() {
 	console.log(evaluationId);
 
 	const teacherId = location.state?.teacherId ?? 0;
+	const teacherName = location.state?.teacherName ?? "";
 
 	const navigate = useNavigate();
 
@@ -128,6 +130,45 @@ export default function AdminEvaluationResponseDetailedListView() {
 	};
 
 	console.log(evaluations);
+
+	const generatePDF = (
+		teacherName: string,
+		averages: {
+			average: number;
+			average_1: number;
+			average_2: number;
+			average_3: number;
+			average_4: number;
+		}
+	) => {
+		const doc = new jsPDF();
+
+		doc.setFontSize(18);
+		doc.text("Teacher Evaluation Summary", 20, 20);
+
+		doc.setFontSize(14);
+		doc.text(`Name: ${teacherName}`, 20, 35);
+
+		doc.setFontSize(12);
+		doc.text("Average Scores:", 20, 50);
+		doc.text(
+			`Personal & Professional Characteristics: ${averages.average_1.toFixed(
+				2
+			)}`,
+			20,
+			60
+		);
+		doc.text(`Classroom Teaching: ${averages.average_2.toFixed(2)}`, 20, 70);
+		doc.text(
+			`Classroom Management & Control: ${averages.average_3.toFixed(2)}`,
+			20,
+			80
+		);
+		doc.text(`Lesson Plans: ${averages.average_4.toFixed(2)}`, 20, 90);
+		doc.text(`Overall Average: ${averages.average.toFixed(2)}`, 20, 105);
+
+		doc.save(`${teacherName}_evaluation_summary.pdf`);
+	};
 
 	useEffect(() => {
 		fetchEvaluations();
@@ -336,14 +377,17 @@ export default function AdminEvaluationResponseDetailedListView() {
 							<td colSpan={12} className="text-center py-6">
 								<ChartModal averages={averages} />
 							</td>
+							<td colSpan={12} className="text-center py-6">
+								<button
+									onClick={() => generatePDF(teacherName, averages)}
+									className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-all duration-200"
+								>
+									Download PDF Summary
+								</button>
+							</td>
 						</tr>
 					</tfoot>
 				</tbody>
-				{/* <div className="text-center my-4">
-					<h2 className="text-lg font-bold text-gray-700">
-						Total Average: {totalAverage.toFixed(2)}
-					</h2>
-				</div> */}
 			</table>
 			<div className="flex items-center justify-center space-x-2 mt-4">
 				<button
