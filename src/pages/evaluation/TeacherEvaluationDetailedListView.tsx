@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { formattedDate } from "../../utils/formatDate";
 import { useAutoHideToast } from "../../hooks/useAutoHideToast";
 import usePagination from "../../hooks/usePagination";
+import ChartModal from "@/components/ChartModal";
 
 export default function TeacherEvaluationDetailedListView() {
 	const [evaluations, setEvaluations] = useState<any[]>([]);
@@ -233,7 +234,15 @@ export default function TeacherEvaluationDetailedListView() {
 							<td className="p-4 text-sm text-black">{evaluation.average_3}</td>
 							<td className="p-4 text-sm text-black">{evaluation.average_4}</td>
 							<td className="p-4 text-sm text-black">{evaluation.average}</td>
-							<td className="p-4 text-sm text-black">{evaluation.comment}</td>
+							<div className="relative group">
+								<td className="p-4 text-sm text-black truncate max-w-xs whitespace-nowrap overflow-hidden cursor-pointer">
+									{evaluation.comment}
+								</td>
+								<div className="absolute z-10 hidden group-hover:block bg-black text-white text-xs rounded py-1 px-2 max-w-xs whitespace-normal break-words shadow-lg -top-8 left-0">
+									{evaluation.comment}
+								</div>
+							</div>
+
 							<td className="p-4 text-sm text-black">
 								{formattedDate(evaluation.created_at)}
 							</td>
@@ -309,6 +318,11 @@ export default function TeacherEvaluationDetailedListView() {
 								<div>{averages.average.toFixed(2)}</div>
 							</td>
 							<td colSpan={4}></td>
+						</tr>
+						<tr>
+							<td colSpan={12} className="text-center py-6">
+								<ChartModal averages={averages} />
+							</td>
 						</tr>
 					</tfoot>
 				</tbody>
