@@ -177,7 +177,6 @@ export default function TeacherEvaluationDetailedListView() {
 					</button>
 				</div>
 			)}
-
 			<table className="min-w-full bg-white">
 				<thead className="bg-red-800 whitespace-nowrap">
 					<tr>
@@ -214,9 +213,9 @@ export default function TeacherEvaluationDetailedListView() {
 						{/* <th className="p-4 text-left text-sm font-medium text-white">
 							Status
 						</th> */}
-						<th className="p-4 text-left text-sm font-medium text-white">
+						{/* <th className="p-4 text-left text-sm font-medium text-white">
 							Actions
-						</th>
+						</th> */}
 					</tr>
 				</thead>
 
@@ -260,7 +259,7 @@ export default function TeacherEvaluationDetailedListView() {
 									</span>
 								)}
 							</td> */}
-							<td className="p-4">
+							{/* <td className="p-4">
 								<Link
 									to={`/teacher/questions`}
 									state={{
@@ -285,7 +284,7 @@ export default function TeacherEvaluationDetailedListView() {
 										</svg>
 									</button>
 								</Link>
-							</td>
+							</td> */}
 						</tr>
 					))}
 					<tfoot>
