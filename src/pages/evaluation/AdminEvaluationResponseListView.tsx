@@ -180,6 +180,7 @@ export default function AdminEvaluationResponseListView() {
 										userId: userId,
 										teacherId: evaluation.teacher_id,
 										teacherName: evaluation.teacher_name,
+										evaluationTitle: evaluation.title,
 									}}
 								>
 									<button className="mr-4" title="click ">

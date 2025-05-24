@@ -20,6 +20,7 @@ export default function AdminEvaluationResponseDetailedListView() {
 
 	const teacherId = location.state?.teacherId ?? 0;
 	const teacherName = location.state?.teacherName ?? "";
+	const evaluationTitle = location.state?.evaluationTitle ?? "";
 
 	const navigate = useNavigate();
 
@@ -143,30 +144,68 @@ export default function AdminEvaluationResponseDetailedListView() {
 	) => {
 		const doc = new jsPDF();
 
+		// Title Section - Centered and spaced
 		doc.setFontSize(18);
-		doc.text("Teacher Evaluation Summary", 20, 20);
+		doc.text(
+			"Teacher Evaluation Summary",
+			doc.internal.pageSize.getWidth() / 2,
+			20,
+			{ align: "center" }
+		);
 
 		doc.setFontSize(14);
-		doc.text(`Name: ${teacherName}`, 20, 35);
+		doc.text(`${evaluationTitle}`, doc.internal.pageSize.getWidth() / 2, 30, {
+			align: "center",
+		});
 
+		// Spacing before next section
+		let yPosition = 45;
+
+		// Teacher Name
+		doc.setFontSize(13);
+		doc.text(`Name: ${teacherName}`, 20, yPosition);
+		yPosition += 15;
+
+		// Average Scores Section Title
 		doc.setFontSize(12);
-		doc.text("Average Scores:", 20, 50);
+		doc.text("Average Scores:", 20, yPosition);
+		yPosition += 10;
+
+		// Individual Scores
 		doc.text(
-			`Personal & Professional Characteristics: ${averages.average_1.toFixed(
+			`1. Personal & Professional Characteristics: ${averages.average_1.toFixed(
 				2
 			)}`,
-			20,
-			60
+			25,
+			yPosition
 		);
-		doc.text(`Classroom Teaching: ${averages.average_2.toFixed(2)}`, 20, 70);
-		doc.text(
-			`Classroom Management & Control: ${averages.average_3.toFixed(2)}`,
-			20,
-			80
-		);
-		doc.text(`Lesson Plans: ${averages.average_4.toFixed(2)}`, 20, 90);
-		doc.text(`Overall Average: ${averages.average.toFixed(2)}`, 20, 105);
+		yPosition += 10;
 
+		doc.text(
+			`2. Classroom Teaching: ${averages.average_2.toFixed(2)}`,
+			25,
+			yPosition
+		);
+		yPosition += 10;
+
+		doc.text(
+			`3. Classroom Management & Control: ${averages.average_3.toFixed(2)}`,
+			25,
+			yPosition
+		);
+		yPosition += 10;
+
+		doc.text(
+			`4. Lesson Plans: ${averages.average_4.toFixed(2)}`,
+			25,
+			yPosition
+		);
+		yPosition += 15;
+
+		// Overall Average
+		doc.setFontSize(12);
+		doc.setFont(undefined, "bold");
+		doc.text(`Overall Average: ${averages.average.toFixed(2)}`, 20, yPosition);
 		doc.save(`${teacherName}_evaluation_summary.pdf`);
 	};
 
