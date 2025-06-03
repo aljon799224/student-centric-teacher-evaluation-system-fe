@@ -204,7 +204,7 @@ export default function AdminEvaluationResponseDetailedListView() {
 
 		// Overall Average
 		doc.setFontSize(12);
-		doc.setFont(undefined, "bold");
+		doc.setFont(undefined as any, "bold");
 		doc.text(`Overall Average: ${averages.average.toFixed(2)}`, 20, yPosition);
 		doc.save(`${teacherName}_evaluation_summary.pdf`);
 	};
